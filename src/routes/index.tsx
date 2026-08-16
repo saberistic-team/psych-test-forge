@@ -231,6 +231,9 @@ function Landing() {
             <Link to="/explore" className="hover:text-foreground">
               Explore
             </Link>
+            <Link to="/guides/what-is-the-big-five-personality-test" className="hover:text-foreground">
+              Big Five guide
+            </Link>
             <Link to="/take" className="hover:text-foreground">
               Take a test
             </Link>
