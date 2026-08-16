@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { getMyAccount, listMyTests, listTestAttempts } from "@/lib/tests.functions";
+import { getMyListingAnalytics } from "@/lib/marketplace.functions";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ function Analytics() {
   const tests = useQuery({ queryKey: ["my-tests"], queryFn: useServerFn(listMyTests) });
   const fetchAttempts = useServerFn(listTestAttempts);
   const [testId, setTestId] = useState("all");
+  const listings = useQuery({ queryKey: ["listing-analytics"], queryFn: useServerFn(getMyListingAnalytics) });
 
   const attempts = useQuery({
     queryKey: ["attempts", testId],
@@ -202,6 +204,55 @@ function Analytics() {
             </Table>
           </div>
         </>
+      )}
+
+      <h2 className="mt-12 text-lg font-semibold">Marketplace performance</h2>
+      {(listings.data?.rows.length ?? 0) === 0 ? (
+        <div className="surface mt-4 p-6 text-sm text-muted-foreground">
+          None of your tests are listed on the public marketplace yet. Open a published test and use its Marketplace
+          tab to list it.
+        </div>
+      ) : (
+        <div className="surface mt-4 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Listing</TableHead>
+                <TableHead>Views</TableHead>
+                <TableHead>Joins</TableHead>
+                <TableHead>Completions</TableHead>
+                <TableHead>Report unlocks</TableHead>
+                <TableHead>Funnel</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {listings.data!.rows.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    <Link to="/tests/$id" params={{ id: r.id }} className="font-medium hover:underline">
+                      {r.title}
+                    </Link>
+                    <div className="mt-1 flex gap-1.5">
+                      {r.featured ? <Badge className="text-xs">featured</Badge> : null}
+                      {r.verified ? (
+                        <Badge variant="outline" className="text-xs">
+                          verified
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">{r.impressions}</TableCell>
+                  <TableCell className="font-mono text-sm">{r.joins}</TableCell>
+                  <TableCell className="font-mono text-sm">{r.completions}</TableCell>
+                  <TableCell className="font-mono text-sm">{r.unlocks}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {r.joinRate}% join · {r.completionRate}% finish · {r.unlockRate}% unlock
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </AppShell>
   );
