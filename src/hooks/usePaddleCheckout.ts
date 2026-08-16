@@ -5,10 +5,10 @@ import { initializePaddle, getPaddlePriceId } from "@/lib/paddle";
 
 export type CheckoutOptions = {
   priceId: string;
-  quantity?: number;
-  customerEmail?: string;
-  customData?: Record<string, string>;
-  successUrl?: string;
+  quantity?: number | undefined;
+  customerEmail?: string | undefined;
+  customData?: Record<string, string> | undefined;
+  successUrl?: string | undefined;
 };
 
 export function usePaddleCheckout() {
