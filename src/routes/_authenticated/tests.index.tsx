@@ -6,6 +6,9 @@ import { getMyAccount, listMyTests } from "@/lib/tests.functions";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TestIcon } from "@/components/visuals/TestIcon";
+import { specSchema } from "@/lib/spec";
+import { visualsOf } from "@/lib/visuals";
 
 export const Route = createFileRoute("/_authenticated/tests/")({
   head: () => ({
@@ -51,10 +54,14 @@ function TestLibrary() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {tests.data!.map((t) => {
             const spec = t.spec as { meta?: { construct?: string; subscales?: string[] }; items?: unknown[] } | null;
+            const parsed = specSchema.safeParse(t.spec);
             return (
               <div key={t.id} className="surface flex flex-col p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-display text-lg leading-snug font-semibold">{t.title}</h2>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    {parsed.success ? <TestIcon visuals={visualsOf(parsed.data)} size={40} /> : null}
+                    <h2 className="font-display text-lg leading-snug font-semibold">{t.title}</h2>
+                  </div>
                   {t.published ? (
                     <Badge className="shrink-0 font-mono">{t.access_code}</Badge>
                   ) : (
@@ -64,6 +71,9 @@ function TestLibrary() {
                   )}
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">{spec?.meta?.construct ?? "—"}</p>
+                {t.listed ? (
+                  <p className="mt-2 text-xs text-accent">Listed on the public marketplace</p>
+                ) : null}
                 <p className="mt-3 text-xs text-muted-foreground">
                   {spec?.items?.length ?? 0} items · {spec?.meta?.subscales?.length ?? 0} subscales ·{" "}
                   {t.attempt_count} attempts
