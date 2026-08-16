@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { AlertTriangle, FlaskConical, Loader2, Lock, ShieldCheck, Sparkles, History } from "lucide-react";
 import { toast } from "sonner";
-import { getAttemptResult, unlockPremiumReport, startResultsPlus } from "@/lib/participant.functions";
+import { getAttemptResult } from "@/lib/participant.functions";
+import { getPaddleEnvironment } from "@/lib/paddle";
+import { PRICE_IDS } from "@/lib/paddle-catalog";
+import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { getParticipantId } from "@/lib/participant-id";
 import { PARTICIPANT_PRICING } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
@@ -26,37 +29,25 @@ export const Route = createFileRoute("/results/$attemptId")({
 
 function ResultsPage() {
   const { attemptId } = Route.useParams();
-  const qc = useQueryClient();
   const fetchResult = useServerFn(getAttemptResult);
-  const unlock = useServerFn(unlockPremiumReport);
-  const subscribe = useServerFn(startResultsPlus);
+  const environment = getPaddleEnvironment();
+  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const [participantId, setParticipantId] = useState("");
 
   useEffect(() => setParticipantId(getParticipantId()), []);
 
   const query = useQuery({
     queryKey: ["attempt-result", attemptId, participantId],
-    queryFn: () => fetchResult({ data: { attemptId, participantId } }),
+    queryFn: () => fetchResult({ data: { attemptId, participantId, environment } }),
     enabled: Boolean(participantId),
   });
 
-  const unlockMutation = useMutation({
-    mutationFn: () => unlock({ data: { attemptId, participantId } }),
-    onSuccess: async () => {
-      toast.success("Full report unlocked.");
-      await qc.invalidateQueries({ queryKey: ["attempt-result"] });
-    },
-    onError: () => toast.error("Could not unlock the report."),
-  });
-
-  const subMutation = useMutation({
-    mutationFn: () => subscribe({ data: { participantId } }),
-    onSuccess: async () => {
-      toast.success("Results+ is active on this device.");
-      await qc.invalidateQueries({ queryKey: ["attempt-result"] });
-    },
-    onError: () => toast.error("Could not start Results+."),
-  });
+  const buy = (priceId: string) =>
+    openCheckout({
+      priceId,
+      customData: { participantId, attemptId },
+      successUrl: `${window.location.origin}/results/${attemptId}?checkout=success`,
+    });
 
   const result = query.data?.found ? query.data.result : null;
 
@@ -203,17 +194,21 @@ function ResultsPage() {
                   </div>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <Button onClick={() => unlockMutation.mutate()} disabled={unlockMutation.isPending}>
-                    {unlockMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-                    Unlock this report — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)}
+                  <Button onClick={() => void buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
+                    {checkoutLoading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Unlock full reports — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
                   </Button>
-                  <Button variant="outline" onClick={() => subMutation.mutate()} disabled={subMutation.isPending}>
+                  <Button
+                    variant="outline"
+                    onClick={() => void buy(PRICE_IDS.resultsPlusMonthly)}
+                    disabled={checkoutLoading}
+                  >
                     Results+ — ${(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month
                   </Button>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Card payments are not connected on this workspace yet, so unlocks are granted immediately for
-                  testing.
+                  A one-time unlock covers the full report and PDF for every result you have taken on this device.
+                  Your report unlocks as soon as the payment is confirmed.
                 </p>
               </div>
             ) : null}
