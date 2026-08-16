@@ -58,7 +58,7 @@ function Dashboard() {
     <AppShell
       title={`Welcome${account.data?.profile?.name ? `, ${account.data.profile.name}` : ""}`}
       subtitle="Generate an instrument, publish it behind a join code and watch the responses come in."
-      isAdmin={account.data?.isAdmin}
+      isAdmin={account.data?.isAdmin ?? false}
       actions={
         <Button asChild>
           <Link to="/generate">
