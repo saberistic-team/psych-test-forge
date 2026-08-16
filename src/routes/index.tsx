@@ -1,24 +1,239 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FlaskConical, Sparkles, ShieldCheck, LineChart, Check, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CREATOR_PLANS, PARTICIPANT_PRICING } from "@/lib/plans";
+import { useState } from "react";
+import { useRouter } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Psych Lab — AI-built psychological tests you can publish" },
+      {
+        name: "description",
+        content:
+          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored, interpreted results.",
+      },
+      { property: "og:title", content: "Psych Lab — AI-built psychological tests you can publish" },
+      {
+        property: "og:description",
+        content:
+          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored results.",
+      },
+    ],
+  }),
+  component: Landing,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function JoinBox() {
+  const router = useRouter();
+  const [code, setCode] = useState("");
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+    <form
+      className="flex w-full max-w-sm gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (code.trim().length >= 4) router.navigate({ to: "/take/$code", params: { code: code.trim().toUpperCase() } });
+      }}
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+      <Input
+        value={code}
+        onChange={(e) => setCode(e.target.value.toUpperCase())}
+        placeholder="Join code, e.g. K7M2QP"
+        aria-label="Test join code"
+        maxLength={8}
+        className="h-11 bg-card font-mono tracking-[0.18em] uppercase"
       />
+      <Button type="submit" size="lg" variant="secondary" className="h-11 shrink-0">
+        Take test
+      </Button>
+    </form>
+  );
+}
+
+function Landing() {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b border-border/60">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+          <div className="flex items-center gap-2">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+              <FlaskConical className="size-5" />
+            </span>
+            <span className="font-display text-lg font-semibold">Psych Lab</span>
+          </div>
+          <nav className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/take">Take a test</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to="/auth">Start creating</Link>
+            </Button>
+          </nav>
+        </div>
+      </header>
+
+      <section className="hero-wash relative overflow-hidden border-b border-border/60">
+        <div className="lab-grid absolute inset-0 opacity-70" aria-hidden />
+        <div className="relative mx-auto max-w-6xl px-5 py-20 sm:py-28">
+          <Badge variant="secondary" className="mb-5 rounded-full px-3 py-1 text-xs font-medium">
+            Psychometrics, generated and scored
+          </Badge>
+          <h1 className="max-w-3xl text-4xl leading-[1.05] font-semibold sm:text-6xl">
+            Build a real psychological test in a single prompt.
+          </h1>
+          <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+            Describe an instrument you know or a construct you're curious about. Psych Lab writes the items, subscales,
+            reverse-scoring, attention checks and interpretation bands — then publishes it behind a six-character join
+            code.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Button asChild size="lg">
+              <Link to="/auth">
+                Generate your first test <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <JoinBox />
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 py-20">
+        <h2 className="text-3xl font-semibold">How it works</h2>
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {[
+            {
+              icon: Sparkles,
+              title: "Two decision paths",
+              body: "Name an established instrument and it is reproduced with its original scale, bands and citations. Describe an open angle and the model chooses a construct, anchors it in theory and designs 3–6 subscales.",
+            },
+            {
+              icon: ShieldCheck,
+              title: "Validated before it ships",
+              body: "Every spec is checked against a strict schema. If it fails, the exact errors go back to the model in a self-repair loop, so what you publish actually scores.",
+            },
+            {
+              icon: LineChart,
+              title: "Scored and interpreted",
+              body: "Reverse-scoring, attention checks, subscale and overall bands, cohort comparison and narrative interpretation — all computed server-side.",
+            },
+          ].map((f) => (
+            <div key={f.title} className="surface p-6">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+                <f.icon className="size-5" />
+              </span>
+              <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="pricing" className="border-y border-border/60 bg-secondary/40 px-5 py-20">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-3xl font-semibold">Creator plans</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Generate, publish and measure. Cancel any time.</p>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {CREATOR_PLANS.map((plan) => (
+              <div
+                key={plan.id}
+                className={
+                  plan.id === "pro"
+                    ? "surface relative p-6 ring-2 ring-primary"
+                    : "surface p-6"
+                }
+              >
+                {plan.id === "pro" ? (
+                  <Badge className="absolute -top-3 left-6">Most popular</Badge>
+                ) : null}
+                <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
+                <p className="mt-2">
+                  <span className="text-4xl font-semibold">{plan.priceLabel}</span>
+                  <span className="text-sm text-muted-foreground">/month</span>
+                </p>
+                <ul className="mt-5 space-y-2.5 text-sm">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex gap-2">
+                      <Check className="mt-0.5 size-4 shrink-0 text-accent" />
+                      <span className="text-muted-foreground">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild className="mt-6 w-full" variant={plan.id === "pro" ? "default" : "outline"}>
+                  <Link to="/auth">{plan.priceCents === 0 ? "Start free" : `Choose ${plan.name}`}</Link>
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="surface mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
+            <div>
+              <h3 className="font-display text-lg font-semibold">For participants</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Free results always include your subscale scores and bands. Unlock the full narrative report for $
+                {(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} per test, or subscribe to Results+ at $
+                {(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month for unlimited reports, history and trends.
+              </p>
+            </div>
+            <Button asChild variant="secondary">
+              <Link to="/take">I have a join code</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-5 py-20">
+        <h2 className="text-3xl font-semibold">Questions</h2>
+        <Accordion type="single" collapsible className="mt-6">
+          <AccordionItem value="a">
+            <AccordionTrigger>Are these clinical instruments?</AccordionTrigger>
+            <AccordionContent>
+              No. Every generated test carries a non-clinical disclaimer — results indicate tendencies and invite
+              reflection, they never diagnose or treat. Established instruments are reproduced for research and
+              educational use, with a licensing caution when commercial use is plausible.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="b">
+            <AccordionTrigger>What exactly does the AI produce?</AccordionTrigger>
+            <AccordionContent>
+              A single validated JSON spec: metadata and theory framing, instructions and response scale, every item with
+              its subscale and reverse-scoring flag, attention checks, the scoring method with interpretation bands, and
+              per-subscale narrative interpretations.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="c">
+            <AccordionTrigger>Can I bring a test I already have?</AccordionTrigger>
+            <AccordionContent>
+              Yes — paste or upload a spec JSON in the generator and it is validated and added to your library like any
+              generated test.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="d">
+            <AccordionTrigger>Do participants need an account?</AccordionTrigger>
+            <AccordionContent>
+              Never. They enter a join code and a first name. Results are tied to their device until they choose to
+              unlock a premium report.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      <footer className="border-t border-border/60 px-5 py-10">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
+          <span>© {new Date().getFullYear()} Psych Lab. Not a diagnostic service.</span>
+          <div className="flex gap-4">
+            <Link to="/take" className="hover:text-foreground">
+              Take a test
+            </Link>
+            <Link to="/auth" className="hover:text-foreground">
+              Creator sign in
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

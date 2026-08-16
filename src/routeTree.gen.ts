@@ -10,33 +10,97 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
+import { Route as TakeIndexRouteImport } from './routes/take.index'
+import { Route as TakeCodeRouteImport } from './routes/take.$code'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsAttemptIdRoute = ResultsAttemptIdRouteImport.update({
+  id: '/results/$attemptId',
+  path: '/results/$attemptId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TakeIndexRoute = TakeIndexRouteImport.update({
+  id: '/take/',
+  path: '/take/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TakeCodeRoute = TakeCodeRouteImport.update({
+  id: '/take/$code',
+  path: '/take/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/results/$attemptId': typeof ResultsAttemptIdRoute
+  '/take/$code': typeof TakeCodeRoute
+  '/take/': typeof TakeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/results/$attemptId': typeof ResultsAttemptIdRoute
+  '/take/$code': typeof TakeCodeRoute
+  '/take': typeof TakeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/results/$attemptId': typeof ResultsAttemptIdRoute
+  '/take/$code': typeof TakeCodeRoute
+  '/take/': typeof TakeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/results/$attemptId'
+    | '/take/$code'
+    | '/take/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    '/' | '/auth' | '/history' | '/results/$attemptId' | '/take/$code' | '/take'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/results/$attemptId'
+    | '/take/$code'
+    | '/take/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  HistoryRoute: typeof HistoryRoute
+  ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
+  TakeCodeRoute: typeof TakeCodeRoute
+  TakeIndexRoute: typeof TakeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +112,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results/$attemptId': {
+      id: '/results/$attemptId'
+      path: '/results/$attemptId'
+      fullPath: '/results/$attemptId'
+      preLoaderRoute: typeof ResultsAttemptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/take/': {
+      id: '/take/'
+      path: '/take'
+      fullPath: '/take/'
+      preLoaderRoute: typeof TakeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/take/$code': {
+      id: '/take/$code'
+      path: '/take/$code'
+      fullPath: '/take/$code'
+      preLoaderRoute: typeof TakeCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  HistoryRoute: HistoryRoute,
+  ResultsAttemptIdRoute: ResultsAttemptIdRoute,
+  TakeCodeRoute: TakeCodeRoute,
+  TakeIndexRoute: TakeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
