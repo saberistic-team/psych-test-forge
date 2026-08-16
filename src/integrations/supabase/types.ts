@@ -105,6 +105,35 @@ export type Database = {
           },
         ]
       }
+      listing_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          test_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          test_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          test_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_events_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       premium_reports: {
         Row: {
           amount: number | null
