@@ -14,16 +14,336 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attempts: {
+        Row: {
+          created_at: string
+          id: string
+          participant_id: string
+          participant_name: string | null
+          responses: Json
+          scores: Json
+          test_id: string
+          validity: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          participant_id: string
+          participant_name?: string | null
+          responses: Json
+          scores: Json
+          test_id: string
+          validity?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          participant_id?: string
+          participant_name?: string | null
+          responses?: Json
+          scores?: Json
+          test_id?: string
+          validity?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempts_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generation_jobs: {
+        Row: {
+          created_at: string
+          creator_id: string
+          errors: Json | null
+          id: string
+          model: string
+          path_hint: string
+          request: string
+          status: string
+          temperature: number
+          test_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          errors?: Json | null
+          id?: string
+          model: string
+          path_hint?: string
+          request: string
+          status?: string
+          temperature?: number
+          test_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          errors?: Json | null
+          id?: string
+          model?: string
+          path_hint?: string
+          request?: string
+          status?: string
+          temperature?: number
+          test_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_jobs_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      premium_reports: {
+        Row: {
+          amount: number | null
+          attempt_id: string
+          created_at: string
+          id: string
+          provider_ref: string | null
+          purchased: boolean
+        }
+        Insert: {
+          amount?: number | null
+          attempt_id: string
+          created_at?: string
+          id?: string
+          provider_ref?: string | null
+          purchased?: boolean
+        }
+        Update: {
+          amount?: number | null
+          attempt_id?: string
+          created_at?: string
+          id?: string
+          provider_ref?: string | null
+          purchased?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "premium_reports_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: true
+            referencedRelation: "attempts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing: {
+        Row: {
+          audience: string
+          can_publish: boolean
+          features: Json
+          monthly_attempts: number | null
+          monthly_generations: number | null
+          pdf_export: boolean
+          plan: string
+          price_cents: number
+          sort_order: number
+          white_label: boolean
+        }
+        Insert: {
+          audience?: string
+          can_publish?: boolean
+          features?: Json
+          monthly_attempts?: number | null
+          monthly_generations?: number | null
+          pdf_export?: boolean
+          plan: string
+          price_cents?: number
+          sort_order?: number
+          white_label?: boolean
+        }
+        Update: {
+          audience?: string
+          can_publish?: boolean
+          features?: Json
+          monthly_attempts?: number | null
+          monthly_generations?: number | null
+          pdf_export?: boolean
+          plan?: string
+          price_cents?: number
+          sort_order?: number
+          white_label?: boolean
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          billing_cycle_start: string
+          created_at: string
+          id: string
+          name: string | null
+          org: string | null
+          plan: string
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle_start?: string
+          created_at?: string
+          id: string
+          name?: string | null
+          org?: string | null
+          plan?: string
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle_start?: string
+          created_at?: string
+          id?: string
+          name?: string | null
+          org?: string | null
+          plan?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          participant_id: string | null
+          plan: string
+          provider_ref: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          participant_id?: string | null
+          plan: string
+          provider_ref?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          participant_id?: string | null
+          plan?: string
+          provider_ref?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      tests: {
+        Row: {
+          access_code: string | null
+          created_at: string
+          creator_id: string
+          deleted_at: string | null
+          id: string
+          published: boolean
+          slug: string | null
+          spec: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          access_code?: string | null
+          created_at?: string
+          creator_id: string
+          deleted_at?: string | null
+          id?: string
+          published?: boolean
+          slug?: string | null
+          spec: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          access_code?: string | null
+          created_at?: string
+          creator_id?: string
+          deleted_at?: string | null
+          id?: string
+          published?: boolean
+          slug?: string | null
+          spec?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_metering: {
+        Row: {
+          creator_id: string
+          id: string
+          metric: string
+          period: string
+          value: number
+        }
+        Insert: {
+          creator_id: string
+          id?: string
+          metric: string
+          period: string
+          value?: number
+        }
+        Update: {
+          creator_id?: string
+          id?: string
+          metric?: string
+          period?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "creator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +470,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "creator"],
+    },
   },
 } as const
