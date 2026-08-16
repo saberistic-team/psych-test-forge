@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LegalRouteImport } from './routes/legal'
-import { Route as VisualcheckRouteImport } from './routes/visualcheck'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
@@ -58,11 +57,6 @@ const HistoryRoute = HistoryRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VisualcheckRoute = VisualcheckRouteImport.update({
-  id: '/visualcheck',
-  path: '/visualcheck',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -143,7 +137,6 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
-  '/visualcheck': typeof VisualcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -165,7 +158,6 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
-  '/visualcheck': typeof VisualcheckRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -189,7 +181,6 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
-  '/visualcheck': typeof VisualcheckRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
@@ -213,7 +204,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
-    | '/visualcheck'
     | '/admin'
     | '/analytics'
     | '/billing'
@@ -235,7 +225,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
-    | '/visualcheck'
     | '/admin'
     | '/analytics'
     | '/billing'
@@ -258,7 +247,6 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
-    | '/visualcheck'
     | '/_authenticated/admin'
     | '/_authenticated/analytics'
     | '/_authenticated/billing'
@@ -282,7 +270,6 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   HistoryRoute: typeof HistoryRoute
   LegalRoute: typeof LegalRouteWithChildren
-  VisualcheckRoute: typeof VisualcheckRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
   TakeIndexRoute: typeof TakeIndexRoute
@@ -331,13 +318,6 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/visualcheck': {
-      id: '/visualcheck'
-      path: '/visualcheck'
-      fullPath: '/visualcheck'
-      preLoaderRoute: typeof VisualcheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -485,7 +465,6 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   HistoryRoute: HistoryRoute,
   LegalRoute: LegalRouteWithChildren,
-  VisualcheckRoute: VisualcheckRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
   TakeIndexRoute: TakeIndexRoute,
