@@ -21,6 +21,7 @@ import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
+import { Route as GuidesWhatIsTheBigFivePersonalityTestRouteImport } from './routes/guides.what-is-the-big-five-personality-test'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
@@ -90,6 +91,12 @@ const AuthenticatedGenerateRoute = AuthenticatedGenerateRouteImport.update({
   path: '/generate',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const GuidesWhatIsTheBigFivePersonalityTestRoute =
+  GuidesWhatIsTheBigFivePersonalityTestRouteImport.update({
+    id: '/guides/what-is-the-big-five-personality-test',
+    path: '/guides/what-is-the-big-five-personality-test',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -149,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -171,6 +179,7 @@ export interface FileRoutesByTo {
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -195,6 +204,7 @@ export interface FileRoutesById {
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
+  '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/billing'
     | '/dashboard'
     | '/generate'
+    | '/guides/what-is-the-big-five-personality-test'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/billing'
     | '/dashboard'
     | '/generate'
+    | '/guides/what-is-the-big-five-personality-test'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -264,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
     | '/_authenticated/generate'
+    | '/guides/what-is-the-big-five-personality-test'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -283,6 +296,7 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   LegalRoute: typeof LegalRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
   TakeIndexRoute: typeof TakeIndexRoute
@@ -374,6 +388,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/generate'
       preLoaderRoute: typeof AuthenticatedGenerateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/guides/what-is-the-big-five-personality-test': {
+      id: '/guides/what-is-the-big-five-personality-test'
+      path: '/guides/what-is-the-big-five-personality-test'
+      fullPath: '/guides/what-is-the-big-five-personality-test'
+      preLoaderRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/legal/privacy': {
       id: '/legal/privacy'
@@ -486,6 +507,8 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   LegalRoute: LegalRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  GuidesWhatIsTheBigFivePersonalityTestRoute:
+    GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
   TakeIndexRoute: TakeIndexRoute,
