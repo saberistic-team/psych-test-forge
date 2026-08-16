@@ -22,6 +22,13 @@ function LegalLayout() {
             <Link to="/legal/refunds" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Refunds
             </Link>
+            <Link
+              to="/legal/acceptable-use"
+              className="hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              AI use
+            </Link>
           </nav>
         </div>
       </header>
