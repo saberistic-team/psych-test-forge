@@ -75,6 +75,7 @@ function AuthPage() {
           <span className="font-display text-lg font-semibold">Psych Lab</span>
         </Link>
         <div className="surface p-6 sm:p-8">
+          <h1 className="mb-6 text-center font-display text-2xl font-semibold">Creator sign in</h1>
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
