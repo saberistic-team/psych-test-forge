@@ -53,7 +53,7 @@ function Radar({ subscales, scale }: ResultsVisualProps) {
   const on = useReveal();
   const size = 320;
   const c = size / 2;
-  const r = c - 54;
+  const r = c - 62;
   const n = subscales.length;
   const point = (i: number, value: number) => {
     const a = (Math.PI * 2 * i) / n - Math.PI / 2;
@@ -65,7 +65,7 @@ function Radar({ subscales, scale }: ResultsVisualProps) {
     .join(" ");
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto w-full max-w-[360px]" role="img" aria-label="Radar chart of subscale scores">
+    <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto w-full max-w-[360px] overflow-visible" role="img" aria-label="Radar chart of subscale scores">
       {rings.map((ring) => (
         <polygon
           key={ring}
@@ -99,7 +99,7 @@ function Radar({ subscales, scale }: ResultsVisualProps) {
               dominantBaseline="middle"
               className="fill-muted-foreground text-[9px]"
             >
-              {s.subscale.length > 18 ? `${s.subscale.slice(0, 17)}…` : s.subscale}
+              {s.subscale.length > 14 ? `${s.subscale.slice(0, 13)}…` : s.subscale}
             </text>
           </g>
         );
