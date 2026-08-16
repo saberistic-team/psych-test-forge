@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { RESULTS_STYLES, type TestVisuals } from "@/lib/spec";
 import { ResultsVisual } from "@/components/visuals/ResultsVisual";
 
-export const Route = createFileRoute("/__visualcheck")({ component: Check });
+export const Route = createFileRoute("/visualcheck")({ component: Check });
 
 const base: TestVisuals = {
   icon: { type: "emoji", value: "🧭", style: "" },
