@@ -13,11 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
@@ -44,6 +48,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -68,6 +77,21 @@ const AuthenticatedGenerateRoute = AuthenticatedGenerateRouteImport.update({
   id: '/generate',
   path: '/generate',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalRefundsRoute = LegalRefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => LegalRoute,
 } as any)
 const ResultsAttemptIdRoute = ResultsAttemptIdRouteImport.update({
   id: '/results/$attemptId',
@@ -105,11 +129,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/legal': typeof LegalRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
@@ -121,11 +149,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/legal': typeof LegalRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take': typeof TakeIndexRoute
@@ -139,11 +171,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/legal': typeof LegalRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
@@ -157,11 +193,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/legal'
     | '/admin'
     | '/analytics'
     | '/billing'
     | '/dashboard'
     | '/generate'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
@@ -173,11 +213,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/legal'
     | '/admin'
     | '/analytics'
     | '/billing'
     | '/dashboard'
     | '/generate'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
     | '/take'
@@ -190,11 +234,15 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/history'
+    | '/legal'
     | '/_authenticated/admin'
     | '/_authenticated/analytics'
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
     | '/_authenticated/generate'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
@@ -208,6 +256,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   HistoryRoute: typeof HistoryRoute
+  LegalRoute: typeof LegalRouteWithChildren
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
   TakeIndexRoute: typeof TakeIndexRoute
@@ -244,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -278,6 +334,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/generate'
       preLoaderRoute: typeof AuthenticatedGenerateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/refunds': {
+      id: '/legal/refunds'
+      path: '/refunds'
+      fullPath: '/legal/refunds'
+      preLoaderRoute: typeof LegalRefundsRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof LegalRoute
     }
     '/results/$attemptId': {
       id: '/results/$attemptId'
@@ -347,11 +424,26 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface LegalRouteChildren {
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalRefundsRoute: typeof LegalRefundsRoute
+  LegalTermsRoute: typeof LegalTermsRoute
+}
+
+const LegalRouteChildren: LegalRouteChildren = {
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalRefundsRoute: LegalRefundsRoute,
+  LegalTermsRoute: LegalTermsRoute,
+}
+
+const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   HistoryRoute: HistoryRoute,
+  LegalRoute: LegalRouteWithChildren,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
   TakeIndexRoute: TakeIndexRoute,

@@ -69,7 +69,19 @@ export function AppShell({
             <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground">
               <LogOut className="size-4" /> Sign out
             </Button>
+            <div className="mt-3 flex flex-wrap gap-3 px-3 text-xs text-muted-foreground">
+              <Link to="/legal/terms" className="hover:text-foreground">
+                Terms
+              </Link>
+              <Link to="/legal/privacy" className="hover:text-foreground">
+                Privacy
+              </Link>
+              <Link to="/legal/refunds" className="hover:text-foreground">
+                Refunds
+              </Link>
+            </div>
           </div>
+
         </aside>
 
         <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
