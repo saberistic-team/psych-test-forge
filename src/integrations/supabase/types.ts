@@ -110,7 +110,9 @@ export type Database = {
           amount: number | null
           attempt_id: string
           created_at: string
+          environment: string
           id: string
+          participant_id: string | null
           provider_ref: string | null
           purchased: boolean
         }
@@ -118,7 +120,9 @@ export type Database = {
           amount?: number | null
           attempt_id: string
           created_at?: string
+          environment?: string
           id?: string
+          participant_id?: string | null
           provider_ref?: string | null
           purchased?: boolean
         }
@@ -126,7 +130,9 @@ export type Database = {
           amount?: number | null
           attempt_id?: string
           created_at?: string
+          environment?: string
           id?: string
+          participant_id?: string | null
           provider_ref?: string | null
           purchased?: boolean
         }
@@ -211,36 +217,54 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cancel_at_period_end: boolean
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
+          environment: string
           id: string
+          paddle_customer_id: string | null
+          paddle_subscription_id: string | null
           participant_id: string | null
           plan: string
+          price_id: string | null
           provider_ref: string | null
           status: string
+          updated_at: string
           user_id: string | null
         }
         Insert: {
+          cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          environment?: string
           id?: string
+          paddle_customer_id?: string | null
+          paddle_subscription_id?: string | null
           participant_id?: string | null
           plan: string
+          price_id?: string | null
           provider_ref?: string | null
           status?: string
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
+          cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          environment?: string
           id?: string
+          paddle_customer_id?: string | null
+          paddle_subscription_id?: string | null
           participant_id?: string | null
           plan?: string
+          price_id?: string | null
           provider_ref?: string | null
           status?: string
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: []
