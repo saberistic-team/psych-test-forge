@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { scoreResponses, ResponseError } from "./scoring";
+import { scoreResponses, ResponseError, type ScoreResult } from "./scoring";
 import { specSchema } from "./spec";
 
 export const getTestByCode = createServerFn({ method: "POST" })
@@ -153,7 +153,7 @@ export const getAttemptResult = createServerFn({ method: "POST" })
         testTitle: test.title,
         code: test.access_code,
         spec: parsed.data,
-        scores: attempt.scores as unknown,
+        scores: attempt.scores as unknown as ScoreResult,
         premium: Boolean(report?.purchased) || resultsPlus,
         resultsPlus,
         watermark: (profile?.plan ?? "free") === "free",
@@ -246,7 +246,7 @@ export const getMyHistory = createServerFn({ method: "POST" })
         id: a.id,
         testId: a.test_id,
         title: titles.get(a.test_id) ?? "Test",
-        scores: a.scores as unknown,
+        scores: a.scores as unknown as ScoreResult,
         createdAt: a.created_at,
       })),
     };
