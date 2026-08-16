@@ -22,6 +22,7 @@ import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
 import { Route as GuidesWhatIsTheBigFivePersonalityTestRouteImport } from './routes/guides.what-is-the-big-five-personality-test'
+import { Route as LegalAcceptableUseRouteImport } from './routes/legal.acceptable-use'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
@@ -97,6 +98,11 @@ const GuidesWhatIsTheBigFivePersonalityTestRoute =
     path: '/guides/what-is-the-big-five-personality-test',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LegalAcceptableUseRoute = LegalAcceptableUseRouteImport.update({
+  id: '/acceptable-use',
+  path: '/acceptable-use',
+  getParentRoute: () => LegalRoute,
+} as any)
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
+  '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/guides/what-is-the-big-five-personality-test'
+    | '/legal/acceptable-use'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/guides/what-is-the-big-five-personality-test'
+    | '/legal/acceptable-use'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/generate'
     | '/guides/what-is-the-big-five-personality-test'
+    | '/legal/acceptable-use'
     | '/legal/privacy'
     | '/legal/refunds'
     | '/legal/terms'
@@ -396,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/acceptable-use': {
+      id: '/legal/acceptable-use'
+      path: '/acceptable-use'
+      fullPath: '/legal/acceptable-use'
+      preLoaderRoute: typeof LegalAcceptableUseRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/legal/privacy': {
       id: '/legal/privacy'
       path: '/privacy'
@@ -486,12 +505,14 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface LegalRouteChildren {
+  LegalAcceptableUseRoute: typeof LegalAcceptableUseRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundsRoute: typeof LegalRefundsRoute
   LegalTermsRoute: typeof LegalTermsRoute
 }
 
 const LegalRouteChildren: LegalRouteChildren = {
+  LegalAcceptableUseRoute: LegalAcceptableUseRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundsRoute: LegalRefundsRoute,
   LegalTermsRoute: LegalTermsRoute,

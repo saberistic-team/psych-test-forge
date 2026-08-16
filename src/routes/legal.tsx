@@ -22,6 +22,13 @@ function LegalLayout() {
             <Link to="/legal/refunds" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Refunds
             </Link>
+            <Link
+              to="/legal/acceptable-use"
+              className="hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              AI use
+            </Link>
           </nav>
         </div>
       </header>
@@ -29,7 +36,8 @@ function LegalLayout() {
         <Outlet />
       </main>
       <footer className="border-t border-border/60 px-5 py-8 text-center text-xs text-muted-foreground">
-        Psych Lab — research and self-reflection tools. Not a diagnostic or medical service.
+        Psych Lab — research and self-reflection tools. Not a diagnostic, medical or professional-advice service, and
+        never used to make or influence decisions about a person.
       </footer>
     </div>
   );

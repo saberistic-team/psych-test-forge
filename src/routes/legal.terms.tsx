@@ -98,6 +98,24 @@ function TermsPage() {
           that breach this section.</li>
       </ul>
 
+      <h2>6a. No automated decisions about people; no professional services</h2>
+      <p>
+        Psych Lab does not make, and must not be used to make or materially influence, any decision about a natural
+        person. It performs no automated decision-making or profiling within the meaning of Article 22 GDPR: scores are
+        deterministic arithmetic over answers a person voluntarily gives about themselves, and they are displayed to that
+        person. The AI writes question wording and descriptive text only; it does not evaluate individuals, produce risk
+        scores, or recommend actions about anyone.
+      </p>
+      <p>
+        You must not use the service or its outputs in hiring, promotion, dismissal, admissions, tenancy, credit,
+        insurance, benefits, immigration, legal or law-enforcement contexts, in any healthcare or clinical pathway, or to
+        deliver psychological, medical, legal, financial or other regulated professional advice to a client. Psych Lab is
+        not a regulated professional service and is not supervised by any professional or regulatory body; nothing it
+        outputs is professional advice. Every generated instrument must be reviewed and approved by you before publishing.
+        Full details are in our <a href="/legal/acceptable-use">AI Use &amp; No Automated Decisions Policy</a>, which
+        forms part of these terms.
+      </p>
+
       <h2>7. Intellectual property</h2>
       <p>
         We retain all ownership of the Psych Lab platform and its intellectual property, including its software,

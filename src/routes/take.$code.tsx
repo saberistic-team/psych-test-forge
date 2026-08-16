@@ -173,9 +173,18 @@ function TakePage() {
               className="max-w-xs"
             />
           </div>
-          <p className="mt-6 rounded-lg bg-secondary/60 p-4 text-xs leading-relaxed text-muted-foreground">
-            {spec.interpretation.disclaimer}
-          </p>
+          <div className="mt-6 rounded-lg bg-secondary/60 p-4 text-xs leading-relaxed text-muted-foreground">
+            <p>{spec.interpretation.disclaimer}</p>
+            <p className="mt-3">
+              This questionnaire was written by a human creator with AI assistance and is for self-reflection, research
+              or education. Your answers are scored arithmetically and shown to you. No diagnosis is made, no
+              professional advice is given, and no decision about you is made or influenced by the result. See our{" "}
+              <a href="/legal/acceptable-use" className="underline">
+                AI Use &amp; No Automated Decisions Policy
+              </a>
+              .
+            </p>
+          </div>
           <Button size="lg" className="mt-6" onClick={() => setStarted(true)}>
             Begin <ArrowRight className="size-4" />
           </Button>
