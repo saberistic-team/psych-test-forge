@@ -93,6 +93,12 @@ export const importTestSpec = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error || !test) throw new Error(error?.message ?? "Could not import the spec.");
+    // Imported specs often predate the visuals block — fill it in so the test is
+    // marketplace-ready and its results page has a chosen style.
+    if (!spec.visuals) {
+      const { ensureTestVisuals } = await import("./visuals.server");
+      await ensureTestVisuals(test.id, context.userId);
+    }
     return { ok: true as const, errors: [] as string[], testId: test.id };
   });
 
