@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import type { ResultsStyle, TestVisuals } from "@/lib/spec";
 import { bandColor, effectiveResultsStyle } from "@/lib/visuals";
 import { cn } from "@/lib/utils";
@@ -328,7 +328,7 @@ function Constellation({ subscales, scale, visuals }: ResultsVisualProps) {
   );
 }
 
-const RENDERERS: Record<ResultsStyle, (p: ResultsVisualProps) => JSX.Element> = {
+const RENDERERS: Record<ResultsStyle, (p: ResultsVisualProps) => ReactElement> = {
   radar: Radar,
   gauges: Gauges,
   bars: Bars,
