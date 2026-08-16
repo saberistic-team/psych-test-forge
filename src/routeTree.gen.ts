@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
@@ -19,6 +21,10 @@ import { Route as TakeCodeRouteImport } from './routes/take.$code'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -30,6 +36,11 @@ const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ResultsAttemptIdRoute = ResultsAttemptIdRouteImport.update({
   id: '/results/$attemptId',
@@ -51,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
@@ -59,6 +71,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take': typeof TakeIndexRoute
@@ -66,8 +79,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
@@ -78,17 +93,26 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/history'
+    | '/dashboard'
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/auth' | '/history' | '/results/$attemptId' | '/take/$code' | '/take'
-  id:
-    | '__root__'
     | '/'
     | '/auth'
     | '/history'
+    | '/dashboard'
+    | '/results/$attemptId'
+    | '/take/$code'
+    | '/take'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/history'
+    | '/_authenticated/dashboard'
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
@@ -96,6 +120,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   HistoryRoute: typeof HistoryRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
@@ -112,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -125,6 +157,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/results/$attemptId': {
       id: '/results/$attemptId'
@@ -150,8 +189,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   HistoryRoute: HistoryRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
