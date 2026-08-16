@@ -101,6 +101,17 @@ function Landing() {
             </Button>
             <JoinBox />
           </div>
+          <p className="mt-8 max-w-2xl rounded-xl border border-border/60 bg-secondary/50 p-4 text-xs leading-relaxed text-muted-foreground">
+            For research, education and self-reflection only. Psych Lab is authoring software: every test is written and
+            approved by a human creator, scores are simple arithmetic over the answers a person gives about themselves,
+            and results are shown to that person. It is not a clinical, diagnostic or professional-advice service, and it
+            must never be used to make or influence decisions about anyone — hiring, admissions, credit, healthcare or
+            otherwise. See our{" "}
+            <Link to="/legal/acceptable-use" className="underline">
+              AI Use &amp; No Automated Decisions Policy
+            </Link>
+            .
+          </p>
         </div>
       </section>
 
