@@ -7,6 +7,7 @@ export type PlanDef = {
   priceCents: number;
   generations: number | null;
   attempts: number | null;
+  listings: number | null;
   canPublish: boolean;
   pdfExport: boolean;
   whiteLabel: boolean;
@@ -21,6 +22,7 @@ export const CREATOR_PLANS: PlanDef[] = [
     priceCents: 0,
     generations: 2,
     attempts: 5,
+    listings: 0,
     canPublish: false,
     pdfExport: false,
     whiteLabel: false,
@@ -29,6 +31,7 @@ export const CREATOR_PLANS: PlanDef[] = [
       "Drafts only — publishing locked",
       "Watermarked participant results",
       "5 participant attempts per month",
+      "Marketplace listings locked",
       "Community attribution",
     ],
   },
@@ -39,6 +42,7 @@ export const CREATOR_PLANS: PlanDef[] = [
     priceCents: 1900,
     generations: 50,
     attempts: 500,
+    listings: 3,
     canPublish: true,
     pdfExport: true,
     whiteLabel: false,
@@ -47,6 +51,7 @@ export const CREATOR_PLANS: PlanDef[] = [
       "Publish unlimited tests",
       "500 attempts per month",
       "PDF report export",
+      "3 public marketplace listings",
       "Custom branding",
       "Priority generation queue",
     ],
@@ -58,12 +63,14 @@ export const CREATOR_PLANS: PlanDef[] = [
     priceCents: 7900,
     generations: null,
     attempts: 10000,
+    listings: null,
     canPublish: true,
     pdfExport: true,
     whiteLabel: true,
     features: [
       "Unlimited AI generations",
       "10,000 attempts per month",
+      "Unlimited marketplace listings + featured requests",
       "Full white-label",
       "5 team seats",
       "License-clearance advice for established tests",
