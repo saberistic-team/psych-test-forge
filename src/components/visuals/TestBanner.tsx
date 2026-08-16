@@ -59,9 +59,9 @@ export function TestBanner({
   showIcon = true,
 }: {
   visuals: TestVisuals;
-  title?: string;
-  subtitle?: string;
-  className?: string;
+  title?: string | undefined;
+  subtitle?: string | undefined;
+  className?: string | undefined;
   height?: number;
   showIcon?: boolean;
 }) {
