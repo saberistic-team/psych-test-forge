@@ -1,5 +1,15 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { FlaskConical, LayoutDashboard, Sparkles, Library, BarChart3, CreditCard, Shield, LogOut } from "lucide-react";
+import {
+  FlaskConical,
+  LayoutDashboard,
+  Sparkles,
+  Library,
+  BarChart3,
+  CreditCard,
+  Shield,
+  LogOut,
+  Globe,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,6 +19,7 @@ const NAV = [
   { to: "/generate", label: "Generate", icon: Sparkles },
   { to: "/tests", label: "Test library", icon: Library },
   { to: "/analytics", label: "Results", icon: BarChart3 },
+  { to: "/explore", label: "Explore", icon: Globe },
   { to: "/billing", label: "Billing", icon: CreditCard },
 ] as const;
 
