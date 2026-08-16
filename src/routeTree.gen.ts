@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
+import { Route as TakeCodeRouteImport } from './routes/take.$code'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +29,43 @@ const TakeIndexRoute = TakeIndexRouteImport.update({
   path: '/take/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TakeCodeRoute = TakeCodeRouteImport.update({
+  id: '/take/$code',
+  path: '/take/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/take/$code': typeof TakeCodeRoute
   '/take': typeof TakeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/take/'
+  fullPaths: '/' | '/auth' | '/take/$code' | '/take/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/take'
-  id: '__root__' | '/' | '/auth' | '/take/'
+  to: '/' | '/auth' | '/take/$code' | '/take'
+  id: '__root__' | '/' | '/auth' | '/take/$code' | '/take/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  TakeCodeRoute: typeof TakeCodeRoute
   TakeIndexRoute: typeof TakeIndexRoute
 }
 
@@ -82,12 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TakeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/take/$code': {
+      id: '/take/$code'
+      path: '/take/$code'
+      fullPath: '/take/$code'
+      preLoaderRoute: typeof TakeCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  TakeCodeRoute: TakeCodeRoute,
   TakeIndexRoute: TakeIndexRoute,
 }
 export const routeTree = rootRouteImport
