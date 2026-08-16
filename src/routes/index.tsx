@@ -260,6 +260,9 @@ function Landing() {
             <Link to="/legal/refunds" className="hover:text-foreground">
               Refunds
             </Link>
+            <Link to="/legal/acceptable-use" className="hover:text-foreground">
+              AI use
+            </Link>
           </div>
         </div>
       </footer>
