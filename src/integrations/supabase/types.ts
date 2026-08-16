@@ -275,36 +275,54 @@ export type Database = {
           created_at: string
           creator_id: string
           deleted_at: string | null
+          featured: boolean
           id: string
+          listed: boolean
+          listed_at: string | null
+          listing_description: string | null
           published: boolean
           slug: string | null
           spec: Json
+          tagline: string | null
           title: string
           updated_at: string
+          verified: boolean
         }
         Insert: {
           access_code?: string | null
           created_at?: string
           creator_id: string
           deleted_at?: string | null
+          featured?: boolean
           id?: string
+          listed?: boolean
+          listed_at?: string | null
+          listing_description?: string | null
           published?: boolean
           slug?: string | null
           spec: Json
+          tagline?: string | null
           title: string
           updated_at?: string
+          verified?: boolean
         }
         Update: {
           access_code?: string | null
           created_at?: string
           creator_id?: string
           deleted_at?: string | null
+          featured?: boolean
           id?: string
+          listed?: boolean
+          listed_at?: string | null
+          listing_description?: string | null
           published?: boolean
           slug?: string | null
           spec?: Json
+          tagline?: string | null
           title?: string
           updated_at?: string
+          verified?: boolean
         }
         Relationships: []
       }
