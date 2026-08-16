@@ -207,7 +207,11 @@ function ResultsPage() {
                   </Button>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  A one-time unlock covers the full report and PDF for every result you have taken on this device.
+                  Payments are handled by Paddle.com as Merchant of Record. 30-day money-back guarantee — see our{" "}
+                  <a href="/legal/refunds" className="underline">
+                    Refund Policy
+                  </a>
+                  . A one-time unlock covers the full report and PDF for every result you have taken on this device.
                   Your report unlocks as soon as the payment is confirmed.
                 </p>
               </div>

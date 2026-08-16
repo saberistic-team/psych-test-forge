@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -212,6 +213,12 @@ function Billing() {
           </div>
         </>
       )}
+      <p className="mt-8 text-xs text-muted-foreground">
+        Orders are handled by our reseller Paddle.com, the Merchant of Record for all Psych Lab purchases. By
+        subscribing you agree to our <Link to="/legal/terms" className="underline">Terms</Link>,{" "}
+        <Link to="/legal/privacy" className="underline">Privacy Notice</Link> and{" "}
+        <Link to="/legal/refunds" className="underline">Refund Policy</Link> (30-day money-back guarantee).
+      </p>
     </AppShell>
   );
 }
