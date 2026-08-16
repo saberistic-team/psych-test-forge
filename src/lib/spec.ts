@@ -104,6 +104,9 @@ export const specSchema = z.object({
     scoring_instructions: z.string().default(""),
     report_template: z.string().default(""),
   }),
+  // Optional in the schema so specs created before visuals shipped still parse;
+  // generation and publishing require it (see validateSpec / requireVisuals).
+  visuals: visualsSchema.optional(),
 });
 
 export type TestSpec = z.infer<typeof specSchema>;
@@ -112,7 +115,10 @@ export type SpecItem = TestSpec["items"][number];
 const CLINICAL_WORDS = ["diagnose", "diagnoses", "diagnosis", "treats", "cures", "confirms"];
 
 /** Validates a spec and returns human-readable error strings for the self-repair loop. */
-export function validateSpec(input: unknown): { spec?: TestSpec; errors: string[] } {
+export function validateSpec(
+  input: unknown,
+  opts: { requireVisuals?: boolean } = {},
+): { spec?: TestSpec; errors: string[] } {
   const parsed = specSchema.safeParse(input);
   if (!parsed.success) {
     return {
@@ -121,7 +127,13 @@ export function validateSpec(input: unknown): { spec?: TestSpec; errors: string[
   }
   const spec = parsed.data;
   const errors: string[] = [];
+  if (opts.requireVisuals && !spec.visuals) {
+    errors.push(
+      `visuals: a complete visuals block is required — { icon: {type,value,style}, banner: {gradient:[hex,hex],pattern,accent,caption}, results: {style one of ${RESULTS_STYLES.join("|")}, theme, description} }`,
+    );
+  }
   const subscales = new Set(spec.meta.subscales);
+
 
   for (const item of spec.items) {
     if (!subscales.has(item.subscale)) {
