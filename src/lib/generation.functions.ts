@@ -54,7 +54,7 @@ export const startGeneration = createServerFn({ method: "POST" })
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-|-$/g, "")
             .slice(0, 60),
-          spec: spec as unknown as Record<string, unknown>,
+          spec: JSON.parse(JSON.stringify(spec)),
           published: false,
         })
         .select("id")
