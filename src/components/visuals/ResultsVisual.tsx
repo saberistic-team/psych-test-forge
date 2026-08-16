@@ -230,14 +230,15 @@ function Terrain({ subscales, scale, visuals }: ResultsVisualProps) {
   const on = useReveal();
   const w = 400;
   const h = 200;
-  const step = w / Math.max(1, subscales.length - 1 || 1);
+  const pad = 34;
+  const step = (w - pad * 2) / Math.max(1, subscales.length - 1 || 1);
   const pts = subscales.map((s, i) => {
-    const x = subscales.length === 1 ? w / 2 : i * step;
+    const x = subscales.length === 1 ? w / 2 : pad + i * step;
     const y = h - 24 - norm(s.score, scale) * (h - 60);
     return [x, on ? y : h - 24] as const;
   });
   const path = pts.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-  const area = `${path} L${w} ${h} L0 ${h} Z`;
+  const area = `${path} L${w - pad} ${h} L${pad} ${h} Z`;
   return (
     <div>
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label="Terrain profile of subscale scores">
