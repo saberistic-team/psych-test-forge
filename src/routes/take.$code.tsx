@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { TestBanner } from "@/components/visuals/TestBanner";
+import { visualsOf } from "@/lib/visuals";
 
 export const Route = createFileRoute("/take/$code")({
   head: () => ({
@@ -137,7 +139,10 @@ function TakePage() {
   if (!started) {
     return (
       <Shell>
-        <div className="surface p-6 sm:p-8">
+        <div className="surface overflow-hidden">
+          <TestBanner visuals={visualsOf(spec)} height={150} className="rounded-none" />
+        </div>
+        <div className="surface mt-6 p-6 sm:p-8">
           <Badge variant="secondary" className="rounded-full">
             {spec.meta.construct}
           </Badge>

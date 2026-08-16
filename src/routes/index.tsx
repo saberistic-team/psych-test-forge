@@ -67,6 +67,9 @@ function Landing() {
           </div>
           <nav className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm">
+              <Link to="/explore">Explore tests</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
               <Link to="/take">Take a test</Link>
             </Button>
             <Button asChild size="sm">
@@ -225,6 +228,9 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} Psych Lab. Not a diagnostic service.</span>
           <div className="flex gap-4">
+            <Link to="/explore" className="hover:text-foreground">
+              Explore
+            </Link>
             <Link to="/take" className="hover:text-foreground">
               Take a test
             </Link>

@@ -105,6 +105,35 @@ export type Database = {
           },
         ]
       }
+      listing_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          test_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          test_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          test_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_events_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       premium_reports: {
         Row: {
           amount: number | null
@@ -275,36 +304,54 @@ export type Database = {
           created_at: string
           creator_id: string
           deleted_at: string | null
+          featured: boolean
           id: string
+          listed: boolean
+          listed_at: string | null
+          listing_description: string | null
           published: boolean
           slug: string | null
           spec: Json
+          tagline: string | null
           title: string
           updated_at: string
+          verified: boolean
         }
         Insert: {
           access_code?: string | null
           created_at?: string
           creator_id: string
           deleted_at?: string | null
+          featured?: boolean
           id?: string
+          listed?: boolean
+          listed_at?: string | null
+          listing_description?: string | null
           published?: boolean
           slug?: string | null
           spec: Json
+          tagline?: string | null
           title: string
           updated_at?: string
+          verified?: boolean
         }
         Update: {
           access_code?: string | null
           created_at?: string
           creator_id?: string
           deleted_at?: string | null
+          featured?: boolean
           id?: string
+          listed?: boolean
+          listed_at?: string | null
+          listing_description?: string | null
           published?: boolean
           slug?: string | null
           spec?: Json
+          tagline?: string | null
           title?: string
           updated_at?: string
+          verified?: boolean
         }
         Relationships: []
       }

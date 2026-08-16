@@ -5,7 +5,39 @@ import { z } from "zod";
 const bandSchema = z.object({ min: z.number(), max: z.number() });
 const rangesSchema = z.record(z.string(), bandSchema);
 
+export const RESULTS_STYLES = ["radar", "gauges", "bars", "rings", "terrain", "constellation"] as const;
+export const BANNER_PATTERNS = ["waves", "dots", "grid", "mountains", "stars", "none"] as const;
+export type ResultsStyle = (typeof RESULTS_STYLES)[number];
+export type BannerPattern = (typeof BANNER_PATTERNS)[number];
+
+const hexColor = z
+  .string()
+  .trim()
+  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "must be a hex color like #1B2A4A");
+
+export const visualsSchema = z.object({
+  icon: z.object({
+    type: z.enum(["emoji", "svg"]),
+    value: z.string().min(1),
+    style: z.string().default(""),
+  }),
+  banner: z.object({
+    gradient: z.array(hexColor).min(2).max(3),
+    pattern: z.enum(BANNER_PATTERNS).default("none"),
+    accent: hexColor,
+    caption: z.string().default(""),
+  }),
+  results: z.object({
+    style: z.enum(RESULTS_STYLES),
+    theme: z.string().default(""),
+    description: z.string().default(""),
+  }),
+});
+
+export type TestVisuals = z.infer<typeof visualsSchema>;
+
 export const specSchema = z.object({
+
   meta: z.object({
     schema_version: z.string().default("1.0"),
     path: z.enum(["established", "novel"]),
@@ -72,6 +104,9 @@ export const specSchema = z.object({
     scoring_instructions: z.string().default(""),
     report_template: z.string().default(""),
   }),
+  // Optional in the schema so specs created before visuals shipped still parse;
+  // generation and publishing require it (see validateSpec / requireVisuals).
+  visuals: visualsSchema.optional(),
 });
 
 export type TestSpec = z.infer<typeof specSchema>;
@@ -80,7 +115,10 @@ export type SpecItem = TestSpec["items"][number];
 const CLINICAL_WORDS = ["diagnose", "diagnoses", "diagnosis", "treats", "cures", "confirms"];
 
 /** Validates a spec and returns human-readable error strings for the self-repair loop. */
-export function validateSpec(input: unknown): { spec?: TestSpec; errors: string[] } {
+export function validateSpec(
+  input: unknown,
+  opts: { requireVisuals?: boolean } = {},
+): { spec?: TestSpec; errors: string[] } {
   const parsed = specSchema.safeParse(input);
   if (!parsed.success) {
     return {
@@ -89,7 +127,13 @@ export function validateSpec(input: unknown): { spec?: TestSpec; errors: string[
   }
   const spec = parsed.data;
   const errors: string[] = [];
+  if (opts.requireVisuals && !spec.visuals) {
+    errors.push(
+      `visuals: a complete visuals block is required — { icon: {type,value,style}, banner: {gradient:[hex,hex],pattern,accent,caption}, results: {style one of ${RESULTS_STYLES.join("|")}, theme, description} }`,
+    );
+  }
   const subscales = new Set(spec.meta.subscales);
+
 
   for (const item of spec.items) {
     if (!subscales.has(item.subscale)) {

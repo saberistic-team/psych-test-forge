@@ -12,6 +12,8 @@ import {
   setPublished,
 } from "@/lib/tests.functions";
 import { specSchema } from "@/lib/spec";
+import { VisualsPanel } from "@/components/visuals/VisualsPanel";
+import { MarketplacePanel } from "@/components/MarketplacePanel";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -175,12 +177,32 @@ function TestDetail() {
 
       <Tabs value={tab} onValueChange={setTab} className="mt-8">
         <TabsList>
+          <TabsTrigger value="visuals">Visuals</TabsTrigger>
+          <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
           <TabsTrigger value="items">Items ({spec.items.length})</TabsTrigger>
           <TabsTrigger value="scoring">Scoring</TabsTrigger>
           <TabsTrigger value="interpretation">Interpretation</TabsTrigger>
           <TabsTrigger value="responses">Responses ({attempts.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="json">Spec JSON</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="visuals" className="mt-6">
+          <VisualsPanel testId={id} spec={spec} />
+        </TabsContent>
+
+        <TabsContent value="marketplace" className="mt-6">
+          <MarketplacePanel
+            test={{
+              id: test.data.id,
+              published: test.data.published,
+              listed: test.data.listed,
+              featured: test.data.featured,
+              verified: test.data.verified,
+              tagline: test.data.tagline,
+              listing_description: test.data.listing_description,
+            }}
+          />
+        </TabsContent>
 
         <TabsContent value="items" className="mt-6">
           <div className="surface overflow-hidden">

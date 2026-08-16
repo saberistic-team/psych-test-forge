@@ -1,4 +1,4 @@
-import { validateSpec, type TestSpec } from "./spec";
+import { RESULTS_STYLES, validateSpec, visualsSchema, type TestSpec, type TestVisuals } from "./spec";
 
 const MASTER_PROMPT = `You are an expert psychometrician and AI prompt engineer. Produce ONE valid,
 self-contained JSON psychological test spec. Output ONLY the JSON — no prose, no fences.
@@ -15,7 +15,13 @@ at least half of subscales; include at least one attention/validity check item w
 
 HARD RULES:
 - Output is ONLY the JSON matching the schema (meta, instructions, items, scoring,
-  interpretation, administration). Every item.subscale must be in meta.subscales.
+  interpretation, administration, visuals). Every item.subscale must be in meta.subscales.
+- visuals is MANDATORY. YOU choose the art direction, and it must be visually coherent with the
+  construct (a "digital serenity" test -> calm icon, cool gradient, rings; a drive/ambition test ->
+  bold icon, warm gradient, gauges). visuals.results.style MUST be exactly one of
+  radar | gauges | bars | rings | terrain | constellation. Use radar only with 3+ subscales.
+  Colors must be 6-digit hex. icon.type is "emoji" (a single expressive emoji) or "svg"
+  (a self-contained inline <svg> string using currentColor).
 - Ranges must be consistent with the response scale and scoring.method (mean→1-5 style bounds;
   sum→raw sums).
 - interpretation.disclaimer MUST be non-clinical: never "diagnoses/confirms/treats".
@@ -29,7 +35,8 @@ SCHEMA (keys and shapes are mandatory):
   "items": [{"id":"q01","text":"string","subscale":"must be in meta.subscales","reverse_scored":false,"is_attention_check":false,"expected_answer":null}],
   "scoring": {"method":"sum|mean","reverse_logic":"new = (max + min) - raw","subscale_scores":{"calc":"string","ranges":{"low":{"min":1.0,"max":2.4},"moderate":{"min":2.5,"max":3.4},"high":{"min":3.5,"max":5.0}}},"overall_score":{"enabled":true,"calc":"string","ranges":{"low":{"min":1.0,"max":2.4},"moderate":{"min":2.5,"max":3.4},"high":{"min":3.5,"max":5.0}}},"validity_check":{"enabled":true,"rule":"string","action":"warn|invalidate"}},
   "interpretation": {"per_subscale":{"SUBSCALE":{"low":"string","moderate":"string","high":"string"}},"overall":{"low":"string","moderate":"string","high":"string"},"disclaimer":"string"},
-  "administration": {"instructions_for_admin":"string","scoring_instructions":"string","report_template":"string"}
+  "administration": {"instructions_for_admin":"string","scoring_instructions":"string","report_template":"string"},
+  "visuals": {"icon":{"type":"emoji|svg","value":"single emoji or inline <svg>...</svg>","style":"short design description"},"banner":{"gradient":["#112233","#445566"],"pattern":"waves|dots|grid|mountains|stars|none","accent":"#77AABB","caption":"one-line concept for the banner art"},"results":{"style":"radar|gauges|bars|rings|terrain|constellation","theme":"visual metaphor tying the chart to the construct","description":"how subscale + overall scores map onto the visual and how low/moderate/high bands are distinguished"}}
 }
 Band names used in interpretation.per_subscale and interpretation.overall MUST match the band names in scoring ranges.
 
@@ -130,7 +137,7 @@ export async function generateSpec(opts: {
       continue;
     }
 
-    const { spec, errors } = validateSpec(candidate);
+    const { spec, errors } = validateSpec(candidate, { requireVisuals: true });
     if (spec) return { spec, attempts: attempt };
     lastErrors = errors;
     messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 12000) });
@@ -153,4 +160,60 @@ export function makeAccessCode(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(6));
   for (const b of bytes) out += CODE_ALPHABET[b % CODE_ALPHABET.length];
   return out;
+}
+
+const VISUALS_PROMPT = `You are an art director for psychometric instruments. Given a test summary,
+return ONLY a JSON object (no prose, no fences) with this exact shape:
+{"icon":{"type":"emoji|svg","value":"single emoji or inline <svg>...</svg>","style":"short design description"},
+ "banner":{"gradient":["#112233","#445566"],"pattern":"waves|dots|grid|mountains|stars|none","accent":"#77AABB","caption":"one-line concept for the banner art"},
+ "results":{"style":"radar|gauges|bars|rings|terrain|constellation","theme":"visual metaphor tying the chart to the construct","description":"how subscale + overall scores map onto the visual and how low/moderate/high bands are distinguished"}}
+Rules: colors are 6-digit hex; results.style is EXACTLY one of ${RESULTS_STYLES.join(" | ")};
+use radar only when there are 3 or more subscales; keep the art direction coherent with the construct.
+
+TEST SUMMARY:
+`;
+
+/** Generates just the visuals block from a spec summary (icons/banner/results style). */
+export async function generateVisualsBlock(opts: {
+  summary: string;
+  model: string;
+  temperature: number;
+}): Promise<TestVisuals> {
+  const messages: { role: string; content: string }[] = [
+    { role: "user", content: VISUALS_PROMPT + opts.summary },
+  ];
+  let lastError = "unknown error";
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const text = await callModel(messages, opts.model, opts.temperature);
+    let candidate: unknown;
+    try {
+      candidate = extractJson(text);
+    } catch (err) {
+      lastError = (err as Error).message;
+      messages.push({ role: "assistant", content: text.slice(0, 2000) });
+      messages.push({ role: "user", content: `That could not be parsed: ${lastError}. Return ONLY the JSON object.` });
+      continue;
+    }
+    const parsed = visualsSchema.safeParse(candidate);
+    if (parsed.success) return parsed.data;
+    lastError = parsed.error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`).join("; ");
+    messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 2000) });
+    messages.push({
+      role: "user",
+      content: `Your JSON failed validation: ${lastError}. Fix it and return ONLY the corrected JSON object.`,
+    });
+  }
+  throw new Error(`The model could not produce a valid visuals block: ${lastError}`);
+}
+
+/** Compact spec summary sent to the visuals model (meta + item gist + scoring). */
+export function summariseSpecForVisuals(spec: TestSpec): string {
+  return JSON.stringify({
+    meta: spec.meta,
+    title: spec.instructions.title,
+    scale: spec.instructions.response_scale,
+    scoring: { method: spec.scoring.method, bands: Object.keys(spec.scoring.subscale_scores.ranges) },
+    subscale_count: spec.meta.subscales.length,
+    sample_items: spec.items.slice(0, 8).map((i) => ({ text: i.text, subscale: i.subscale })),
+  });
 }

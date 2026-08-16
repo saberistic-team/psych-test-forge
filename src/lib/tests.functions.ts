@@ -27,7 +27,9 @@ export const listMyTests = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("tests")
-      .select("id, title, spec, access_code, published, created_at, updated_at")
+      .select(
+        "id, title, spec, access_code, published, listed, featured, verified, tagline, listing_description, created_at, updated_at",
+      )
       .eq("creator_id", context.userId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
@@ -44,7 +46,9 @@ export const getMyTest = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: test, error } = await context.supabase
       .from("tests")
-      .select("id, title, spec, access_code, published, created_at, updated_at")
+      .select(
+        "id, title, spec, access_code, published, listed, featured, verified, tagline, listing_description, created_at, updated_at",
+      )
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -89,6 +93,12 @@ export const importTestSpec = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error || !test) throw new Error(error?.message ?? "Could not import the spec.");
+    // Imported specs often predate the visuals block — fill it in so the test is
+    // marketplace-ready and its results page has a chosen style.
+    if (!spec.visuals) {
+      const { ensureTestVisuals } = await import("./visuals.server");
+      await ensureTestVisuals(test.id, context.userId);
+    }
     return { ok: true as const, errors: [] as string[], testId: test.id };
   });
 
@@ -102,7 +112,7 @@ export const setPublished = createServerFn({ method: "POST" })
     if (!data.published) {
       const { error } = await supabase
         .from("tests")
-        .update({ published: false })
+        .update({ published: false, listed: false, featured: false })
         .eq("id", data.id)
         .eq("creator_id", userId);
       if (error) throw new Error(error.message);

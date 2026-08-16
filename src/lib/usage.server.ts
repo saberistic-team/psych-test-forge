@@ -24,9 +24,15 @@ export async function readUsage(userId: string) {
     .select("metric, value")
     .eq("creator_id", userId)
     .eq("period", period);
-  const map: Record<string, number> = { generations: 0, attempts: 0, pdf_exports: 0 };
+  const map: Record<string, number> = { generations: 0, attempts: 0, pdf_exports: 0, listings: 0 };
   for (const row of data ?? []) map[row.metric] = row.value;
-  return { period, ...map } as { period: string; generations: number; attempts: number; pdf_exports: number };
+  return { period, ...map } as {
+    period: string;
+    generations: number;
+    attempts: number;
+    pdf_exports: number;
+    listings: number;
+  };
 }
 
 async function increment(userId: string, metric: string) {
@@ -74,6 +80,46 @@ export async function checkAndCountAttempt(creatorId: string) {
   }
   await increment(creatorId, "attempts");
   return { allowed: true as const, reason: "" };
+}
+
+/** Live listing slots: the number of currently listed tests is the source of truth. */
+export async function listingUsage(userId: string) {
+  const db = await admin();
+  const plan = await planForUser(userId);
+  const { count } = await db
+    .from("tests")
+    .select("id", { count: "exact", head: true })
+    .eq("creator_id", userId)
+    .eq("listed", true)
+    .is("deleted_at", null);
+  const used = count ?? 0;
+  const limit = plan.listings;
+  return {
+    plan,
+    used,
+    limit,
+    remaining: limit === null ? null : Math.max(0, limit - used),
+    canRequestFeatured: plan.id === "business",
+  };
+}
+
+export async function checkAndCountListing(userId: string) {
+  const usage = await listingUsage(userId);
+  if (usage.limit !== null && usage.used >= usage.limit) {
+    return {
+      allowed: false as const,
+      status: 402 as const,
+      plan: usage.plan.id,
+      used: usage.used,
+      limit: usage.limit,
+      reason:
+        usage.limit === 0
+          ? `Public marketplace listings are a paid feature — the ${usage.plan.name} plan includes none. Upgrade to Pro for 3 listings.`
+          : `Your ${usage.plan.name} plan includes ${usage.limit} public listings and all of them are in use. Unlist a test or upgrade to Business for unlimited listings.`,
+    };
+  }
+  await increment(userId, "listings");
+  return { allowed: true as const, status: 200 as const, plan: usage.plan.id, used: usage.used, limit: usage.limit, reason: "" };
 }
 
 export async function countPdfExport(userId: string) {

@@ -13,6 +13,9 @@ import { PARTICIPANT_PRICING } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { ResultsVisual } from "@/components/visuals/ResultsVisual";
+import { TestBanner } from "@/components/visuals/TestBanner";
+import { visualsOf } from "@/lib/visuals";
 
 export const Route = createFileRoute("/results/$attemptId")({
   head: () => ({
@@ -141,6 +144,23 @@ function ResultsPage() {
                 )}
               </div>
             ) : null}
+
+            <div className="surface mt-8 overflow-hidden">
+              <TestBanner
+                visuals={visualsOf(result.spec)}
+                title={result.spec.instructions.title}
+                height={140}
+                className="rounded-none"
+              />
+              <div className="p-6">
+                <ResultsVisual
+                  visuals={visualsOf(result.spec)}
+                  subscales={result.scores.subscales}
+                  overall={result.scores.overall}
+                  scale={result.spec.instructions.response_scale}
+                />
+              </div>
+            </div>
 
             <h2 className="mt-10 text-sm tracking-wide text-muted-foreground uppercase">Subscales</h2>
             <div className="mt-4 space-y-4">
