@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { TestVisuals } from "./spec";
 
 export type MarketplaceListing = {
   id: string;
@@ -19,7 +20,7 @@ export type MarketplaceListing = {
   listedAt: string | null;
   creatorOrg: string | null;
   attempts: number;
-  visuals: unknown;
+  visuals: TestVisuals;
 };
 
 async function adminDb() {
@@ -327,7 +328,7 @@ export const setListingFlags = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const db = await adminDb();
-    const patch: Record<string, boolean> = {};
+    const patch: { featured?: boolean; verified?: boolean; listed?: boolean } = {};
     if (data.featured !== undefined) patch.featured = data.featured;
     if (data.verified !== undefined) patch.verified = data.verified;
     if (data.listed !== undefined) patch.listed = data.listed;
