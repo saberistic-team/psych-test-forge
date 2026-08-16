@@ -19,6 +19,7 @@ import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptI
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
 import { Route as AuthenticatedTestsIndexRouteImport } from './routes/_authenticated/tests.index'
+import { Route as AuthenticatedTestsIdRouteImport } from './routes/_authenticated/tests.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +70,11 @@ const AuthenticatedTestsIndexRoute = AuthenticatedTestsIndexRouteImport.update({
   path: '/tests/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTestsIdRoute = AuthenticatedTestsIdRouteImport.update({
+  id: '/tests/$id',
+  path: '/tests/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
+  '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests/': typeof AuthenticatedTestsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take': typeof TakeIndexRoute
+  '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests': typeof AuthenticatedTestsIndexRoute
 }
 export interface FileRoutesById {
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
   '/take/': typeof TakeIndexRoute
+  '/_authenticated/tests/$id': typeof AuthenticatedTestsIdRoute
   '/_authenticated/tests/': typeof AuthenticatedTestsIndexRoute
 }
 export interface FileRouteTypes {
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
+    | '/tests/$id'
     | '/tests/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/results/$attemptId'
     | '/take/$code'
     | '/take'
+    | '/tests/$id'
     | '/tests'
   id:
     | '__root__'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/results/$attemptId'
     | '/take/$code'
     | '/take/'
+    | '/_authenticated/tests/$id'
     | '/_authenticated/tests/'
   fileRoutesById: FileRoutesById
 }
@@ -224,18 +236,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTestsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tests/$id': {
+      id: '/_authenticated/tests/$id'
+      path: '/tests/$id'
+      fullPath: '/tests/$id'
+      preLoaderRoute: typeof AuthenticatedTestsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGenerateRoute: typeof AuthenticatedGenerateRoute
+  AuthenticatedTestsIdRoute: typeof AuthenticatedTestsIdRoute
   AuthenticatedTestsIndexRoute: typeof AuthenticatedTestsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGenerateRoute: AuthenticatedGenerateRoute,
+  AuthenticatedTestsIdRoute: AuthenticatedTestsIdRoute,
   AuthenticatedTestsIndexRoute: AuthenticatedTestsIndexRoute,
 }
 
