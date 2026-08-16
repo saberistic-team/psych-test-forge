@@ -99,7 +99,13 @@ export const submitAttempt = createServerFn({ method: "POST" })
 
 export const getAttemptResult = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({ attemptId: z.string().uuid(), participantId: z.string().min(6).max(64) }).parse(input),
+    z
+      .object({
+        attemptId: z.string().uuid(),
+        participantId: z.string().min(6).max(64),
+        environment: z.enum(["sandbox", "live"]).default("live"),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -119,14 +125,24 @@ export const getAttemptResult = createServerFn({ method: "POST" })
     if (!test || !parsed.success) return { found: false as const, result: null };
 
     const [{ data: report }, { data: cohort }, { data: profile }, { data: sub }] = await Promise.all([
-      supabaseAdmin.from("premium_reports").select("purchased").eq("attempt_id", attempt.id).maybeSingle(),
+      supabaseAdmin
+        .from("premium_reports")
+        .select("purchased")
+        .eq("participant_id", attempt.participant_id)
+        .eq("purchased", true)
+        .eq("environment", data.environment)
+        .limit(1)
+        .maybeSingle(),
       supabaseAdmin.from("attempts").select("scores").eq("test_id", test.id).limit(1000),
       supabaseAdmin.from("profiles").select("plan, org").eq("id", test.creator_id).maybeSingle(),
       supabaseAdmin
         .from("subscriptions")
-        .select("status, plan")
+        .select("status, plan, current_period_end")
         .eq("participant_id", attempt.participant_id)
         .eq("plan", "results_plus")
+        .eq("environment", data.environment)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle(),
     ]);
 
@@ -143,7 +159,9 @@ export const getAttemptResult = createServerFn({ method: "POST" })
       cohortAverages[key] = Number((cohortAverages[key]! / (counts[key] || 1)).toFixed(2));
     }
 
-    const resultsPlus = sub?.status === "active";
+    const subInPeriod = !sub?.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
+    const resultsPlus = Boolean(sub) && subInPeriod &&
+      ["active", "trialing", "past_due", "canceled"].includes(sub!.status);
     return {
       found: true as const,
       result: {
@@ -164,63 +182,15 @@ export const getAttemptResult = createServerFn({ method: "POST" })
     };
   });
 
-/**
- * Unlocks a premium report. Billing is not connected yet, so this records the
- * unlock directly; once payments are enabled this is driven by the webhook.
- */
-export const unlockPremiumReport = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) =>
-    z.object({ attemptId: z.string().uuid(), participantId: z.string().min(6).max(64) }).parse(input),
-  )
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: attempt } = await supabaseAdmin
-      .from("attempts")
-      .select("id, participant_id")
-      .eq("id", data.attemptId)
-      .maybeSingle();
-    if (!attempt || attempt.participant_id !== data.participantId) throw new Error("Attempt not found.");
-    const { error } = await supabaseAdmin
-      .from("premium_reports")
-      .upsert({ attempt_id: attempt.id, purchased: true, amount: 2.99, provider_ref: "pending-billing" }, {
-        onConflict: "attempt_id",
-      });
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
-
-export const startResultsPlus = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ participantId: z.string().min(6).max(64) }).parse(input))
-  .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const now = new Date();
-    const end = new Date(now.getTime() + 30 * 24 * 3600 * 1000);
-    const { data: existing } = await supabaseAdmin
-      .from("subscriptions")
-      .select("id")
-      .eq("participant_id", data.participantId)
-      .eq("plan", "results_plus")
-      .maybeSingle();
-    if (existing) {
-      await supabaseAdmin
-        .from("subscriptions")
-        .update({ status: "active", current_period_start: now.toISOString(), current_period_end: end.toISOString() })
-        .eq("id", existing.id);
-    } else {
-      await supabaseAdmin.from("subscriptions").insert({
-        participant_id: data.participantId,
-        plan: "results_plus",
-        status: "active",
-        provider_ref: "pending-billing",
-        current_period_start: now.toISOString(),
-        current_period_end: end.toISOString(),
-      });
-    }
-    return { ok: true };
-  });
-
 export const getMyHistory = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ participantId: z.string().min(6).max(64) }).parse(input))
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        participantId: z.string().min(6).max(64),
+        environment: z.enum(["sandbox", "live"]).default("live"),
+      })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: attempts } = await supabaseAdmin
@@ -234,14 +204,29 @@ export const getMyHistory = createServerFn({ method: "POST" })
       ? await supabaseAdmin.from("tests").select("id, title").in("id", testIds)
       : { data: [] };
     const titles = new Map((tests ?? []).map((t) => [t.id, t.title]));
-    const { data: sub } = await supabaseAdmin
-      .from("subscriptions")
-      .select("status")
-      .eq("participant_id", data.participantId)
-      .eq("plan", "results_plus")
-      .maybeSingle();
+    const [{ data: sub }, { data: unlock }] = await Promise.all([
+      supabaseAdmin
+        .from("subscriptions")
+        .select("status, current_period_end")
+        .eq("participant_id", data.participantId)
+        .eq("plan", "results_plus")
+        .eq("environment", data.environment)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("premium_reports")
+        .select("purchased")
+        .eq("participant_id", data.participantId)
+        .eq("purchased", true)
+        .eq("environment", data.environment)
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    const inPeriod = !sub?.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
     return {
-      resultsPlus: sub?.status === "active",
+      premium: Boolean(unlock?.purchased),
+      resultsPlus: Boolean(sub) && inPeriod && ["active", "trialing", "past_due", "canceled"].includes(sub!.status),
       attempts: (attempts ?? []).map((a) => ({
         id: a.id,
         testId: a.test_id,

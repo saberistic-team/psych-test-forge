@@ -178,7 +178,9 @@ export const listTestAttempts = createServerFn({ method: "POST" })
 
 export const setMyPlan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ plan: z.enum(["free", "pro", "business"]) }).parse(input))
+  // Paid plans are granted by the payments webhook only; this endpoint can
+  // downgrade to Free (paid cancellation happens in the billing portal).
+  .inputValidator((input: unknown) => z.object({ plan: z.literal("free") }).parse(input))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase
       .from("profiles")
