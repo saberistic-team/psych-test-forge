@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { getAdminOverview, getMyAccount } from "@/lib/tests.functions";
+import { getAdminMarketplace, setListingFlags } from "@/lib/marketplace.functions";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,6 +26,18 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function Admin() {
   const account = useQuery({ queryKey: ["account"], queryFn: useServerFn(getMyAccount) });
   const overview = useQuery({ queryKey: ["admin-overview"], queryFn: useServerFn(getAdminOverview) });
+  const qc = useQueryClient();
+  const marketplace = useQuery({ queryKey: ["admin-marketplace"], queryFn: useServerFn(getAdminMarketplace) });
+  const setFlags = useServerFn(setListingFlags);
+  const flagMutation = useMutation({
+    mutationFn: (vars: { testId: string; featured?: boolean; verified?: boolean; listed?: boolean }) =>
+      setFlags({ data: vars }),
+    onSuccess: async () => {
+      toast.success("Listing updated.");
+      await qc.invalidateQueries({ queryKey: ["admin-marketplace"] });
+    },
+    onError: () => toast.error("Could not update the listing."),
+  });
 
   return (
     <AppShell
@@ -85,6 +101,69 @@ function Admin() {
               </TableBody>
             </Table>
           </div>
+          <h2 className="mt-12 text-lg font-semibold">Marketplace console</h2>
+          {(marketplace.data?.listings.length ?? 0) === 0 ? (
+            <div className="surface mt-4 p-6 text-sm text-muted-foreground">No public listings yet.</div>
+          ) : (
+            <div className="surface mt-4 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Listing</TableHead>
+                    <TableHead>Creator</TableHead>
+                    <TableHead>Views</TableHead>
+                    <TableHead>Joins</TableHead>
+                    <TableHead>Completions</TableHead>
+                    <TableHead>Featured</TableHead>
+                    <TableHead>Verified</TableHead>
+                    <TableHead />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {marketplace.data!.listings.map((l) => (
+                    <TableRow key={l.id}>
+                      <TableCell>
+                        <p className="font-medium">{l.title}</p>
+                        <p className="text-xs text-muted-foreground">{l.tagline ?? "—"}</p>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {l.creator}
+                        <Badge variant="secondary" className="ml-2">
+                          {l.creatorPlan}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">{l.impressions}</TableCell>
+                      <TableCell className="font-mono text-sm">{l.joins}</TableCell>
+                      <TableCell className="font-mono text-sm">{l.completions}</TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={l.featured}
+                          aria-label="Feature listing"
+                          onCheckedChange={(v) => flagMutation.mutate({ testId: l.id, featured: v })}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={l.verified}
+                          aria-label="Verify listing"
+                          onCheckedChange={(v) => flagMutation.mutate({ testId: l.id, verified: v })}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => flagMutation.mutate({ testId: l.id, listed: false, featured: false })}
+                        >
+                          Remove
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </>
       )}
     </AppShell>
