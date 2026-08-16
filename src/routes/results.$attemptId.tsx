@@ -237,10 +237,18 @@ function ResultsPage() {
               </div>
             ) : null}
 
-            <p className="mt-10 rounded-xl bg-secondary/60 p-5 text-xs leading-relaxed text-muted-foreground">
-              {result.spec.interpretation.disclaimer}
-              {result.watermark ? " · Created with Psych Lab (free plan)" : ""}
-            </p>
+            <div className="mt-10 rounded-xl bg-secondary/60 p-5 text-xs leading-relaxed text-muted-foreground">
+              <p>{result.spec.interpretation.disclaimer}</p>
+              <p className="mt-3">
+                These scores are arithmetic summaries of the answers you gave about yourself. They are for
+                self-reflection only: they are not a diagnosis, not professional advice, and no decision about you is
+                made or influenced by them. Read our{" "}
+                <a href="/legal/acceptable-use" className="underline">
+                  AI Use &amp; No Automated Decisions Policy
+                </a>
+                .{result.watermark ? " · Created with Psych Lab (free plan)" : ""}
+              </p>
+            </div>
           </>
         )}
       </main>
