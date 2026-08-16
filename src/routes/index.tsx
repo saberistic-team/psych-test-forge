@@ -231,6 +231,15 @@ function Landing() {
             <Link to="/auth" className="hover:text-foreground">
               Creator sign in
             </Link>
+            <Link to="/legal/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <Link to="/legal/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link to="/legal/refunds" className="hover:text-foreground">
+              Refunds
+            </Link>
           </div>
         </div>
       </footer>

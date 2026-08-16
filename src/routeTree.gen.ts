@@ -20,6 +20,7 @@ import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
@@ -82,6 +83,11 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => LegalRoute,
 } as any)
+const LegalRefundsRoute = LegalRefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => LegalRoute,
+} as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/legal/privacy'
+    | '/legal/refunds'
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/generate'
     | '/legal/privacy'
+    | '/legal/refunds'
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/generate'
     | '/legal/privacy'
+    | '/legal/refunds'
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
@@ -330,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof LegalRoute
     }
+    '/legal/refunds': {
+      id: '/legal/refunds'
+      path: '/refunds'
+      fullPath: '/legal/refunds'
+      preLoaderRoute: typeof LegalRefundsRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/legal/terms': {
       id: '/legal/terms'
       path: '/terms'
@@ -407,11 +426,13 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface LegalRouteChildren {
   LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalRefundsRoute: typeof LegalRefundsRoute
   LegalTermsRoute: typeof LegalTermsRoute
 }
 
 const LegalRouteChildren: LegalRouteChildren = {
   LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalRefundsRoute: LegalRefundsRoute,
   LegalTermsRoute: LegalTermsRoute,
 }
 
