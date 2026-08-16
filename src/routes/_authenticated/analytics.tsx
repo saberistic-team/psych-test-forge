@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/analytics")({
       { property: "og:description", content: "Aggregate results and cohort averages for your published tests." },
     ],
   }),
-  component: Analytics;
+  component: Analytics,
 });
 
 function Analytics() {
