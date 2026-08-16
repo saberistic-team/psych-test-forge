@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as TakeRouteImport } from './routes/take'
+import { Route as TakeIndexRouteImport } from './routes/take.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +23,40 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TakeRoute = TakeRouteImport.update({
-  id: '/take',
-  path: '/take',
+const TakeIndexRoute = TakeIndexRouteImport.update({
+  id: '/take/',
+  path: '/take/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/take': typeof TakeRoute
+  '/take/': typeof TakeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/take': typeof TakeRoute
+  '/take': typeof TakeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/take': typeof TakeRoute
+  '/take/': typeof TakeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/take'
+  fullPaths: '/' | '/auth' | '/take/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/auth' | '/take'
-  id: '__root__' | '/' | '/auth' | '/take'
+  id: '__root__' | '/' | '/auth' | '/take/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  TakeRoute: typeof TakeRoute
+  TakeIndexRoute: typeof TakeIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +75,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/take': {
-      id: '/take'
+    '/take/': {
+      id: '/take/'
       path: '/take'
-      fullPath: '/take'
-      preLoaderRoute: typeof TakeRouteImport
+      fullPath: '/take/'
+      preLoaderRoute: typeof TakeIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  TakeRoute: TakeRoute,
+  TakeIndexRoute: TakeIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
