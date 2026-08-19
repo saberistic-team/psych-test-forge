@@ -86,35 +86,36 @@ function Landing() {
         <div className="lab-grid absolute inset-0 opacity-70" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-5 py-20 sm:py-28">
           <Badge variant="secondary" className="mb-5 rounded-full px-3 py-1 text-xs font-medium">
-            Psychometrics, generated and scored
+            Questionnaire authoring software
           </Badge>
           <h1 className="max-w-3xl text-4xl leading-[1.05] font-semibold sm:text-6xl">
-            Build a real psychological test in a single prompt.
+            Draft a self-report questionnaire in a single prompt.
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            Describe an instrument you know or a construct you're curious about. Psych Lab writes the items, subscales,
-            reverse-scoring, attention checks and interpretation bands — then publishes it behind a six-character join
-            code.
+            Describe the topic you want to explore. Psych Lab drafts the question wording, the response scale,
+            reverse-scoring flags and the score-range text — you edit and approve every word, then publish it behind a
+            six-character join code.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <Link to="/auth">
-                Generate your first test <ArrowRight className="size-4" />
+                Draft your first questionnaire <ArrowRight className="size-4" />
               </Link>
             </Button>
             <JoinBox />
           </div>
           <p className="mt-8 max-w-2xl rounded-xl border border-border/60 bg-secondary/50 p-4 text-xs leading-relaxed text-muted-foreground">
-            For research, education and self-reflection only. Psych Lab is authoring software: every test is written and
-            approved by a human creator, scores are simple arithmetic over the answers a person gives about themselves,
-            and results are shown to that person. It is not a clinical, diagnostic or professional-advice service, and it
-            must never be used to make or influence decisions about anyone — hiring, admissions, credit, healthcare or
-            otherwise. See our{" "}
+            For research, education, entertainment and self-reflection only. AI is used at authoring time to write
+            question wording — it never reads, analyses, rates or profiles a respondent. Scores are fixed arithmetic
+            (sum or mean) over answers a person voluntarily gives about themselves, and the text they see is written and
+            approved in advance by the human creator. Psych Lab is not a clinical, diagnostic, screening or
+            professional-advice service, and it must never be used to make or influence decisions about anyone. See our{" "}
             <Link to="/legal/acceptable-use" className="underline">
               AI Use &amp; No Automated Decisions Policy
             </Link>
             .
           </p>
+
         </div>
       </section>
 
