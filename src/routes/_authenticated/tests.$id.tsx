@@ -14,6 +14,7 @@ import {
 import { specSchema } from "@/lib/spec";
 import { VisualsPanel } from "@/components/visuals/VisualsPanel";
 import { MarketplacePanel } from "@/components/MarketplacePanel";
+import { EmbedPanel } from "@/components/EmbedPanel";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
