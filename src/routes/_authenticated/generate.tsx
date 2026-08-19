@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/generate")({
+  validateSearch: (search: Record<string, unknown>): { prompt?: string } => ({
+    prompt: typeof search.prompt === "string" ? search.prompt.slice(0, 2000) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Generate a questionnaire — Psych Lab" },
