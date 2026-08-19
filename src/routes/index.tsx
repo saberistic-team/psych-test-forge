@@ -11,18 +11,21 @@ import { useRouter } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Psych Lab — AI-built psychological tests you can publish" },
+      { title: "Psych Lab — build and publish self-report questionnaires" },
       {
         name: "description",
         content:
-          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored, interpreted results.",
+          "Authoring software for self-report questionnaires: draft items with AI assistance, edit and approve them yourself, publish behind a join code, and show respondents their own scores.",
       },
-      { property: "og:title", content: "Psych Lab — AI-built psychological tests you can publish" },
+      { property: "og:title", content: "Psych Lab — build and publish self-report questionnaires" },
       {
         property: "og:description",
         content:
-          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored results.",
+          "Draft questionnaire items with AI assistance, approve them yourself, publish with a join code, and let respondents see their own arithmetic scores. For research, education and self-reflection.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+
     ],
   }),
   component: Landing,
