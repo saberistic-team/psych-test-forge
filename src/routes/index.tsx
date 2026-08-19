@@ -211,35 +211,38 @@ function Landing() {
         <h2 className="text-3xl font-semibold">Questions</h2>
         <Accordion type="single" collapsible className="mt-6">
           <AccordionItem value="a">
-            <AccordionTrigger>Are these clinical instruments?</AccordionTrigger>
+            <AccordionTrigger>Does the AI assess or evaluate people?</AccordionTrigger>
             <AccordionContent>
-              No. Every generated test carries a non-clinical disclaimer — results indicate tendencies and invite
-              reflection, they never diagnose or treat. Established instruments are reproduced for research and
-              educational use, with a licensing caution when commercial use is plausible.
+              No. The AI only helps write a questionnaire before anyone answers it: question wording, response scale and
+              the text shown for each score range. It never sees a respondent's answers, never produces an opinion,
+              rating, risk score or profile about a person, and nothing here makes or influences any decision about
+              anyone.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="b">
-            <AccordionTrigger>What exactly does the AI produce?</AccordionTrigger>
+            <AccordionTrigger>Are these clinical or diagnostic instruments?</AccordionTrigger>
             <AccordionContent>
-              A single validated JSON spec: metadata and theory framing, instructions and response scale, every item with
-              its subscale and reverse-scoring flag, attention checks, the scoring method with interpretation bands, and
-              per-subscale narrative interpretations.
+              No. Every questionnaire carries a non-clinical notice. Results are for research, education, entertainment
+              and self-reflection, never diagnosis, screening, treatment or professional advice, and they may not be
+              used in hiring, admissions, credit, insurance, healthcare or similar contexts.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="c">
-            <AccordionTrigger>Can I bring a test I already have?</AccordionTrigger>
+            <AccordionTrigger>How are scores calculated?</AccordionTrigger>
             <AccordionContent>
-              Yes — paste or upload a spec JSON in the generator and it is validated and added to your library like any
-              generated test.
+              By fixed arithmetic only: the sum or mean of the answered response scale, with reverse-scored items
+              flipped. The wording shown for a score range is written and approved by the creator before publishing, so
+              two people with the same score always see the same text.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="d">
-            <AccordionTrigger>Do participants need an account?</AccordionTrigger>
+            <AccordionTrigger>Do respondents need an account?</AccordionTrigger>
             <AccordionContent>
-              Never. They enter a join code and a first name. Results are tied to their device until they choose to
-              unlock a premium report.
+              Never. They enter a join code and a first name, and their results stay on their own device unless they
+              choose to unlock the extended write-up.
             </AccordionContent>
           </AccordionItem>
+
         </Accordion>
       </section>
 
