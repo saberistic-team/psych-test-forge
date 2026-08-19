@@ -27,12 +27,27 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"password" | "forgot">("password");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) void router.navigate({ to: "/dashboard" });
     });
   }, [router]);
+
+  async function sendReset(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) { toast.error("Enter your email first."); return; }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Reset link sent. Check your inbox.");
+    setMode("password");
+  }
+
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
