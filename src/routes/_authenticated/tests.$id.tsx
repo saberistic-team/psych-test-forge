@@ -175,6 +175,17 @@ function TestDetail() {
         </div>
       )}
 
+      <div className="mt-5">
+        <EmbedPanel
+          testId={id}
+          code={test.data.access_code}
+          published={test.data.published}
+          hideAttribution={test.data.hide_attribution ?? false}
+          isPaidPlan={(account.data?.plan?.id ?? "free") !== "free"}
+          onChanged={() => void qc.invalidateQueries({ queryKey: ["test", id] })}
+        />
+      </div>
+
       <Tabs value={tab} onValueChange={setTab} className="mt-8">
         <TabsList>
           <TabsTrigger value="visuals">Visuals</TabsTrigger>
