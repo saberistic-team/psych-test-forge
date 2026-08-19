@@ -1,6 +1,6 @@
-# Fix generation credits and make failures rare
+# Fix generation credits, survivable jobs, and make failures rare
 
-Two problems today: a failed generation still burns a monthly generation credit, and the self-repair loop gives the model weak, repetitive feedback so a bad first draft often stays bad.
+Three problems today: a failed generation still burns a monthly generation credit, a run only lives inside the open page (navigate away and it is lost; fail and it is gone with no retry), and the self-repair loop gives the model weak, repetitive feedback so a bad first draft often stays bad.
 
 ## 1. Only charge for successful generations
 
@@ -23,14 +23,23 @@ Changes in the generation logic:
 
 Same treatment for the visuals generation loop, which has the identical weak-feedback pattern.
 
+## 3. A run must survive navigation and be retryable
+
+Today the request only exists inside the open Generate page: leaving it loses the run, and a failure leaves nothing to act on.
+
+- **Recent runs panel on the Generate page.** The job row already exists in the database from the moment generation starts, so list the creator's recent jobs (status, request, model, time) above the form. A running job shows a live status that keeps polling; a done job links to its test; a failed job shows what went wrong.
+- **Resume on return.** Remember the in-flight job id locally so reopening the page reattaches to it instead of showing a blank form, and mark jobs left in `running` past a sane age as timed out (rather than spinning forever).
+- **Retry and edit-and-retry.** Each failed job gets "Try again" (same request, same settings) and "Edit request" (prefills the form with the original request, path hint, model, temperature so it can be adjusted). Retries of a failed run are not charged an extra credit.
+- **Better in-progress copy.** Replace the long paragraph with a short line plus a visible stage indicator (drafting → validating → repairing attempt N → building visuals) and a note that it is safe to leave the page.
+
 ## Technical notes
 
 - `src/lib/usage.server.ts`: add `releaseGeneration(userId)` using the existing period logic and a guarded decrement.
-- `src/lib/generation.functions.ts`: call the release in the `catch` branch and in the "no spec produced" branch; include `counted: false` in the returned payload.
+- `src/lib/generation.functions.ts`: call the release in the `catch` branch and in the "no spec produced" branch; include `counted: false` in the returned payload; add a `retryGeneration({ jobId })` function that re-runs a failed job's stored request without recounting, and stage/attempt info on the job row.
 - `src/lib/llm.server.ts`: split `callModel` errors into retryable vs terminal, add `coerceSpec()` for the mechanical fixes, build a structured repair message from validation issue paths, and add the low-temperature + fallback-model escalation.
-- `src/routes/_authenticated/generate.tsx`: show the per-attempt errors and the "this attempt was not charged" note.
-- No database schema change needed — `generation_jobs.errors` is already JSON.
+- `src/routes/_authenticated/generate.tsx`: recent-jobs list backed by the existing `listGenerationJobs`, polling via `getGenerationJob` while a job is running, retry/edit actions, per-attempt errors, and the "this attempt was not charged" note.
+- No database schema change needed — `generation_jobs.errors` is already JSON and can hold stage plus per-attempt history.
 
 ## Verification
 
-Run a real generation against the gateway (success path), then force a failure by requesting an impossible spec and confirm the job records `error`, the usage counter is unchanged, and the UI shows the attempt history.
+Run a real generation against the gateway (success path), then force a failure by requesting an impossible spec and confirm the job records `error`, the usage counter is unchanged, the failed job appears in the recent list after a reload, and retry works from there.
