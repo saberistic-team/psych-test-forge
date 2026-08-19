@@ -189,6 +189,7 @@ export const getAttemptResult = createServerFn({ method: "POST" })
       found: true as const,
       result: {
         attemptId: attempt.id,
+        testId: test.id,
         participantName: attempt.participant_name,
         createdAt: attempt.created_at,
         testTitle: test.title,
