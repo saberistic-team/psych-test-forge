@@ -55,6 +55,29 @@ async function increment(userId: string, metric: string) {
   }
 }
 
+async function decrement(userId: string, metric: string) {
+  const db = await admin();
+  const period = currentPeriod();
+  const { data: existing } = await db
+    .from("usage_metering")
+    .select("id, value")
+    .eq("creator_id", userId)
+    .eq("metric", metric)
+    .eq("period", period)
+    .maybeSingle();
+  if (existing && existing.value > 0) {
+    await db
+      .from("usage_metering")
+      .update({ value: Math.max(0, existing.value - 1) })
+      .eq("id", existing.id);
+  }
+}
+
+/** Gives back a generation credit when the run failed — failed attempts are never charged. */
+export async function releaseGeneration(userId: string) {
+  await decrement(userId, "generations");
+}
+
 export async function checkAndCountGeneration(userId: string) {
   const plan = await planForUser(userId);
   const usage = await readUsage(userId);
