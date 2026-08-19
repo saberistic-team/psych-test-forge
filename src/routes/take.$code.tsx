@@ -17,10 +17,19 @@ import { visualsOf } from "@/lib/visuals";
 export const Route = createFileRoute("/take/$code")({
   head: () => ({
     meta: [
-      { title: "Take the assessment — Psych Lab" },
-      { name: "description", content: "Answer each statement honestly. Your results are scored instantly." },
-      { property: "og:title", content: "Take the assessment — Psych Lab" },
-      { property: "og:description", content: "A short Psych Lab questionnaire with instant scored results." },
+      { title: "Answer the questionnaire — Psych Lab" },
+      {
+        name: "description",
+        content: "Answer each statement about yourself. Your answers are added up and the scores are shown to you.",
+      },
+      { property: "og:title", content: "Answer the questionnaire — Psych Lab" },
+      {
+        property: "og:description",
+        content: "A short self-report questionnaire with your own arithmetic scores shown back to you.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+
     ],
   }),
   component: TakePage,
