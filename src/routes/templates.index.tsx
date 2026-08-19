@@ -9,7 +9,7 @@ const DESCRIPTION =
   "Free questionnaire templates for engagement, course feedback, wellbeing, customer satisfaction and team culture — with items, response scales, reverse scoring and score-range wording.";
 const URL = "https://getpsychlab.app/templates";
 
-export const Route = createFileRoute("/templates")({
+export const Route = createFileRoute("/templates/")({
   head: () => ({
     meta: [
       { title: TITLE },
