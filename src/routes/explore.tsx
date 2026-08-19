@@ -15,17 +15,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore psychological tests — Psych Lab" },
+      { title: "Explore self-reflection questionnaires — Psych Lab" },
       {
         name: "description",
         content:
-          "Browse public, AI-authored psychological assessments on Psych Lab: personality, resilience, motivation and more — free to take in minutes.",
+          "Browse public self-report questionnaires published by Psych Lab creators: personality, resilience, motivation and more — free to take in minutes, for curiosity and self-reflection.",
       },
-      { property: "og:title", content: "Explore psychological tests — Psych Lab" },
+      { property: "og:title", content: "Explore self-reflection questionnaires — Psych Lab" },
       {
         property: "og:description",
-        content: "A public marketplace of scored, theory-grounded self-report instruments you can take right now.",
+        content:
+          "Public self-report questionnaires you can answer right now, with your own arithmetic scores shown back to you.",
       },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -97,11 +99,13 @@ function ExplorePage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-5 py-10">
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Explore public tests</h1>
+        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Explore public questionnaires</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Theory-grounded self-report instruments published by Psych Lab creators. Each one is scored instantly with
-          subscale bands and a written interpretation.
+          Self-report questionnaires published by Psych Lab creators. Your answers are added up arithmetically and the
+          score range text the creator wrote in advance is shown back to you — for curiosity and self-reflection, not
+          diagnosis, screening or advice.
         </p>
+
 
         <div className="mt-8 flex flex-wrap items-end gap-3">
           <div className="relative min-w-[240px] flex-1">

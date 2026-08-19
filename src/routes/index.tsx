@@ -11,18 +11,21 @@ import { useRouter } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Psych Lab — AI-built psychological tests you can publish" },
+      { title: "Psych Lab — build and publish self-report questionnaires" },
       {
         name: "description",
         content:
-          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored, interpreted results.",
+          "Authoring software for self-report questionnaires: draft items with AI assistance, edit and approve them yourself, publish behind a join code, and show respondents their own scores.",
       },
-      { property: "og:title", content: "Psych Lab — AI-built psychological tests you can publish" },
+      { property: "og:title", content: "Psych Lab — build and publish self-report questionnaires" },
       {
         property: "og:description",
         content:
-          "Generate rigorous psychological questionnaires with AI, publish them with a join code, and give participants scored results.",
+          "Draft questionnaire items with AI assistance, approve them yourself, publish with a join code, and let respondents see their own arithmetic scores. For research, education and self-reflection.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+
     ],
   }),
   component: Landing,
@@ -83,35 +86,36 @@ function Landing() {
         <div className="lab-grid absolute inset-0 opacity-70" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-5 py-20 sm:py-28">
           <Badge variant="secondary" className="mb-5 rounded-full px-3 py-1 text-xs font-medium">
-            Psychometrics, generated and scored
+            Questionnaire authoring software
           </Badge>
           <h1 className="max-w-3xl text-4xl leading-[1.05] font-semibold sm:text-6xl">
-            Build a real psychological test in a single prompt.
+            Draft a self-report questionnaire in a single prompt.
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-            Describe an instrument you know or a construct you're curious about. Psych Lab writes the items, subscales,
-            reverse-scoring, attention checks and interpretation bands — then publishes it behind a six-character join
-            code.
+            Describe the topic you want to explore. Psych Lab drafts the question wording, the response scale,
+            reverse-scoring flags and the score-range text — you edit and approve every word, then publish it behind a
+            six-character join code.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
               <Link to="/auth">
-                Generate your first test <ArrowRight className="size-4" />
+                Draft your first questionnaire <ArrowRight className="size-4" />
               </Link>
             </Button>
             <JoinBox />
           </div>
           <p className="mt-8 max-w-2xl rounded-xl border border-border/60 bg-secondary/50 p-4 text-xs leading-relaxed text-muted-foreground">
-            For research, education and self-reflection only. Psych Lab is authoring software: every test is written and
-            approved by a human creator, scores are simple arithmetic over the answers a person gives about themselves,
-            and results are shown to that person. It is not a clinical, diagnostic or professional-advice service, and it
-            must never be used to make or influence decisions about anyone — hiring, admissions, credit, healthcare or
-            otherwise. See our{" "}
+            For research, education, entertainment and self-reflection only. AI is used at authoring time to write
+            question wording — it never reads, analyses, rates or profiles a respondent. Scores are fixed arithmetic
+            (sum or mean) over answers a person voluntarily gives about themselves, and the text they see is written and
+            approved in advance by the human creator. Psych Lab is not a clinical, diagnostic, screening or
+            professional-advice service, and it must never be used to make or influence decisions about anyone. See our{" "}
             <Link to="/legal/acceptable-use" className="underline">
               AI Use &amp; No Automated Decisions Policy
             </Link>
             .
           </p>
+
         </div>
       </section>
 
@@ -121,19 +125,20 @@ function Landing() {
           {[
             {
               icon: Sparkles,
-              title: "Two decision paths",
-              body: "Name an established instrument and it is reproduced with its original scale, bands and citations. Describe an open angle and the model chooses a construct, anchors it in theory and designs 3–6 subscales.",
+              title: "Two drafting paths",
+              body: "Name a questionnaire format you already know and get a draft in that shape, or describe an open topic and get a themed draft with 3–6 sections. Either way it is a starting document you edit.",
             },
             {
               icon: ShieldCheck,
-              title: "Validated before it ships",
-              body: "Every spec is checked against a strict schema. If it fails, the exact errors go back to the model in a self-repair loop, so what you publish actually scores.",
+              title: "You approve every word",
+              body: "Drafts are checked against a strict schema so they load and add up, then wait in your library until you review, edit and choose to publish. Nothing is published automatically.",
             },
             {
               icon: LineChart,
-              title: "Scored and interpreted",
-              body: "Reverse-scoring, attention checks, subscale and overall bands, cohort comparison and narrative interpretation — all computed server-side.",
+              title: "Fixed arithmetic scoring",
+              body: "Sum or mean of the response scale with reverse-scored items and attention checks. Each score range shows the text you wrote in advance — no AI looks at anyone's answers.",
             },
+
           ].map((f) => (
             <div key={f.title} className="surface p-6">
               <span className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
@@ -185,12 +190,15 @@ function Landing() {
 
           <div className="surface mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
             <div>
-              <h3 className="font-display text-lg font-semibold">For participants</h3>
+              <h3 className="font-display text-lg font-semibold">For respondents</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Free results always include your subscale scores and bands. Unlock the full narrative report for $
-                {(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} per test, or subscribe to Results+ at $
-                {(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month for unlimited reports, history and trends.
+                Free results always show your section scores and score ranges. Unlock the creator's extended write-up —
+                text written in advance, the same for everyone in that range — for $
+                {(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} per questionnaire, or subscribe to Results+
+                at ${(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month for unlimited unlocks, history and
+                your own trends over time.
               </p>
+
             </div>
             <Button asChild variant="secondary">
               <Link to="/take">I have a join code</Link>
@@ -203,35 +211,38 @@ function Landing() {
         <h2 className="text-3xl font-semibold">Questions</h2>
         <Accordion type="single" collapsible className="mt-6">
           <AccordionItem value="a">
-            <AccordionTrigger>Are these clinical instruments?</AccordionTrigger>
+            <AccordionTrigger>Does the AI assess or evaluate people?</AccordionTrigger>
             <AccordionContent>
-              No. Every generated test carries a non-clinical disclaimer — results indicate tendencies and invite
-              reflection, they never diagnose or treat. Established instruments are reproduced for research and
-              educational use, with a licensing caution when commercial use is plausible.
+              No. The AI only helps write a questionnaire before anyone answers it: question wording, response scale and
+              the text shown for each score range. It never sees a respondent's answers, never produces an opinion,
+              rating, risk score or profile about a person, and nothing here makes or influences any decision about
+              anyone.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="b">
-            <AccordionTrigger>What exactly does the AI produce?</AccordionTrigger>
+            <AccordionTrigger>Are these clinical or diagnostic instruments?</AccordionTrigger>
             <AccordionContent>
-              A single validated JSON spec: metadata and theory framing, instructions and response scale, every item with
-              its subscale and reverse-scoring flag, attention checks, the scoring method with interpretation bands, and
-              per-subscale narrative interpretations.
+              No. Every questionnaire carries a non-clinical notice. Results are for research, education, entertainment
+              and self-reflection, never diagnosis, screening, treatment or professional advice, and they may not be
+              used in hiring, admissions, credit, insurance, healthcare or similar contexts.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="c">
-            <AccordionTrigger>Can I bring a test I already have?</AccordionTrigger>
+            <AccordionTrigger>How are scores calculated?</AccordionTrigger>
             <AccordionContent>
-              Yes — paste or upload a spec JSON in the generator and it is validated and added to your library like any
-              generated test.
+              By fixed arithmetic only: the sum or mean of the answered response scale, with reverse-scored items
+              flipped. The wording shown for a score range is written and approved by the creator before publishing, so
+              two people with the same score always see the same text.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="d">
-            <AccordionTrigger>Do participants need an account?</AccordionTrigger>
+            <AccordionTrigger>Do respondents need an account?</AccordionTrigger>
             <AccordionContent>
-              Never. They enter a join code and a first name. Results are tied to their device until they choose to
-              unlock a premium report.
+              Never. They enter a join code and a first name, and their results stay on their own device unless they
+              choose to unlock the extended write-up.
             </AccordionContent>
           </AccordionItem>
+
         </Accordion>
       </section>
 

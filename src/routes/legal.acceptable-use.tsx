@@ -35,7 +35,22 @@ function AcceptableUsePage() {
         content-creation and self-reflection tool for research, education and entertainment.
       </p>
 
-      <h2>2. Psych Lab does not make or influence decisions about people</h2>
+      <h2>2. Where AI runs, and where it does not</h2>
+      <p>
+        AI is used at one point only: while a creator is drafting a questionnaire, before any respondent exists. It
+        writes candidate question wording, response-scale labels, section names and the descriptive text attached to
+        each score range, plus decorative icon and banner artwork. The creator then edits and approves that draft.
+      </p>
+      <p>
+        After publishing, no AI is involved at any stage. Respondents' answers are never sent to a model. A score is the
+        sum or mean of the answers a person gave about themselves, with reverse-scored items flipped, and the text shown
+        for a score range is the creator's pre-written text — identical for every person whose score falls in that
+        range. The platform produces no AI-written commentary, rating, ranking, risk score, prediction or profile about
+        any individual.
+      </p>
+
+      <h2>3. Psych Lab does not make or influence decisions about people</h2>
+
       <p>
         Psych Lab produces no recommendations, ratings, eligibility outcomes, risk scores or profiles that are intended
         to be acted upon by a third party about an individual. Specifically:
@@ -57,7 +72,7 @@ function AcceptableUsePage() {
         </li>
       </ul>
 
-      <h2>3. Prohibited uses</h2>
+      <h2>4. Prohibited uses</h2>
       <p>
         You must not use Psych Lab, or any test or output produced with it, for any of the following. Accounts doing so
         are suspended.
@@ -87,7 +102,7 @@ function AcceptableUsePage() {
         </li>
       </ul>
 
-      <h2>4. Human review is required</h2>
+      <h2>5. Human review is required</h2>
       <p>
         Every AI-generated instrument is a draft. The creator is the author and publisher of the test: they must read,
         edit and approve the items, scoring and interpretation text before publishing, and they remain responsible for
@@ -95,14 +110,14 @@ function AcceptableUsePage() {
         creator's explicit action.
       </p>
 
-      <h2>5. No advice, no guarantee of accuracy</h2>
+      <h2>6. No advice, no guarantee of accuracy</h2>
       <p>
         AI-generated items, bands and narrative text may be inaccurate, incomplete or psychometrically unvalidated.
         Nothing on Psych Lab is medical, psychological, legal, financial or other professional advice, and nothing should
         be relied upon as such. If you have a health concern, speak to a qualified professional.
       </p>
 
-      <h2>6. Enforcement</h2>
+      <h2>7. Enforcement</h2>
       <p>
         We may filter or refuse AI outputs, remove or unlist tests, and suspend or terminate accounts that breach this
         policy or our <a href="/legal/terms">Terms &amp; Conditions</a>. Report misuse or an allegedly infringing test

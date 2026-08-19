@@ -21,9 +21,19 @@ export const Route = createFileRoute("/results/$attemptId")({
   head: () => ({
     meta: [
       { title: "Your results — Psych Lab" },
-      { name: "description", content: "Your subscale scores, bands and interpretation for this assessment." },
+      {
+        name: "description",
+        content:
+          "Your own section scores and the score-range text the creator wrote in advance for this questionnaire.",
+      },
       { property: "og:title", content: "Your results — Psych Lab" },
-      { property: "og:description", content: "Scored subscales, interpretation bands and cohort comparison." },
+      {
+        property: "og:description",
+        content: "Arithmetic scores from your own answers, with the creator's pre-written score-range text.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -193,7 +203,8 @@ function ResultsPage() {
                       ) : null
                     ) : (
                       <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                        <Lock className="size-3.5" /> Written interpretation available in the full report
+                        <Lock className="size-3.5" /> The creator's pre-written text for this score range is part of the
+                        extended write-up
                       </p>
                     )}
                   </div>
@@ -206,17 +217,19 @@ function ResultsPage() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 size-5 text-accent" />
                   <div>
-                    <h2 className="font-display text-xl font-semibold">Unlock the full report</h2>
+                    <h2 className="font-display text-xl font-semibold">Unlock the extended write-up</h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      Get the written interpretation for every subscale, your cohort percentile context and the
-                      reflection prompts written for this instrument.
+                      See the text the creator wrote in advance for each section's score range, how your score compares
+                      with everyone else who answered, and the reflection prompts they included. Nothing here is
+                      generated about you — everyone in the same range sees the same words.
                     </p>
                   </div>
                 </div>
+
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Button onClick={() => void buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
                     {checkoutLoading ? <Loader2 className="size-4 animate-spin" /> : null}
-                    Unlock full reports — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
+                    Unlock write-ups — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
                   </Button>
                   <Button
                     variant="outline"
@@ -231,8 +244,8 @@ function ResultsPage() {
                   <a href="/legal/refunds" className="underline">
                     Refund Policy
                   </a>
-                  . A one-time unlock covers the full report and PDF for every result you have taken on this device.
-                  Your report unlocks as soon as the payment is confirmed.
+                  . A one-time unlock covers the extended write-up and PDF for every result on this device, and unlocks
+                  as soon as the payment is confirmed.
                 </p>
               </div>
             ) : null}
@@ -240,14 +253,16 @@ function ResultsPage() {
             <div className="mt-10 rounded-xl bg-secondary/60 p-5 text-xs leading-relaxed text-muted-foreground">
               <p>{result.spec.interpretation.disclaimer}</p>
               <p className="mt-3">
-                These scores are arithmetic summaries of the answers you gave about yourself. They are for
-                self-reflection only: they are not a diagnosis, not professional advice, and no decision about you is
-                made or influenced by them. Read our{" "}
+                These scores are fixed arithmetic summaries of the answers you gave about yourself, and the wording you
+                see was written by the creator before you started. No AI read or analysed your answers, nothing here is
+                a diagnosis, screening result or professional advice, and no decision about you is made or influenced by
+                any of it. Read our{" "}
                 <a href="/legal/acceptable-use" className="underline">
                   AI Use &amp; No Automated Decisions Policy
                 </a>
                 .{result.watermark ? " · Created with Psych Lab (free plan)" : ""}
               </p>
+
             </div>
           </>
         )}
