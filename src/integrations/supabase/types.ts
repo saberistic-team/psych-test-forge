@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          detail: Json
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       attempts: {
         Row: {
           created_at: string
@@ -48,6 +75,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "attempts_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_earnings: {
+        Row: {
+          created_at: string
+          creator_id: string
+          environment: string
+          fee_bps: number
+          fee_cents: number
+          gross_cents: number
+          id: string
+          month: string
+          net_cents: number
+          payout_id: string | null
+          purchase_id: string
+          status: string
+          test_id: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          environment?: string
+          fee_bps: number
+          fee_cents: number
+          gross_cents: number
+          id?: string
+          month: string
+          net_cents: number
+          payout_id?: string | null
+          purchase_id: string
+          status?: string
+          test_id: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          environment?: string
+          fee_bps?: number
+          fee_cents?: number
+          gross_cents?: number
+          id?: string
+          month?: string
+          net_cents?: number
+          payout_id?: string | null
+          purchase_id?: string
+          status?: string
+          test_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_earnings_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: true
+            referencedRelation: "listing_purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_earnings_test_id_fkey"
             columns: ["test_id"]
             isOneToOne: false
             referencedRelation: "tests"
@@ -133,6 +223,152 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      listing_purchases: {
+        Row: {
+          amount_cents: number
+          buyer_user_id: string | null
+          created_at: string
+          creator_id: string
+          currency: string
+          environment: string
+          id: string
+          mode: string
+          participant_id: string
+          provider_ref: string
+          status: string
+          test_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          buyer_user_id?: string | null
+          created_at?: string
+          creator_id: string
+          currency?: string
+          environment?: string
+          id?: string
+          mode: string
+          participant_id: string
+          provider_ref: string
+          status?: string
+          test_id: string
+        }
+        Update: {
+          amount_cents?: number
+          buyer_user_id?: string | null
+          created_at?: string
+          creator_id?: string
+          currency?: string
+          environment?: string
+          id?: string
+          mode?: string
+          participant_id?: string
+          provider_ref?: string
+          status?: string
+          test_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_purchases_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payout_accounts: {
+        Row: {
+          country: string | null
+          creator_id: string
+          details: string
+          holder_name: string | null
+          method: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          creator_id: string
+          details?: string
+          holder_name?: string | null
+          method?: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          creator_id?: string
+          details?: string
+          holder_name?: string | null
+          method?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payouts: {
+        Row: {
+          created_at: string
+          creator_id: string
+          environment: string
+          fee_cents: number
+          gross_cents: number
+          id: string
+          month: string
+          net_cents: number
+          note: string | null
+          paid_at: string | null
+          reference: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          environment?: string
+          fee_cents?: number
+          gross_cents?: number
+          id?: string
+          month: string
+          net_cents?: number
+          note?: string | null
+          paid_at?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          environment?: string
+          fee_cents?: number
+          gross_cents?: number
+          id?: string
+          month?: string
+          net_cents?: number
+          note?: string | null
+          paid_at?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
       }
       premium_reports: {
         Row: {
@@ -222,6 +458,8 @@ export type Database = {
           name: string | null
           org: string | null
           plan: string
+          plan_override: string | null
+          revenue_share_bps: number | null
           updated_at: string
         }
         Insert: {
@@ -231,6 +469,8 @@ export type Database = {
           name?: string | null
           org?: string | null
           plan?: string
+          plan_override?: string | null
+          revenue_share_bps?: number | null
           updated_at?: string
         }
         Update: {
@@ -240,6 +480,8 @@ export type Database = {
           name?: string | null
           org?: string | null
           plan?: string
+          plan_override?: string | null
+          revenue_share_bps?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -309,7 +551,9 @@ export type Database = {
           listed: boolean
           listed_at: string | null
           listing_description: string | null
+          price_cents: number
           published: boolean
+          sale_mode: string
           slug: string | null
           spec: Json
           tagline: string | null
@@ -327,7 +571,9 @@ export type Database = {
           listed?: boolean
           listed_at?: string | null
           listing_description?: string | null
+          price_cents?: number
           published?: boolean
+          sale_mode?: string
           slug?: string | null
           spec: Json
           tagline?: string | null
@@ -345,13 +591,57 @@ export type Database = {
           listed?: boolean
           listed_at?: string | null
           listing_description?: string | null
+          price_cents?: number
           published?: boolean
+          sale_mode?: string
           slug?: string | null
           spec?: Json
           tagline?: string | null
           title?: string
           updated_at?: string
           verified?: boolean
+        }
+        Relationships: []
+      }
+      usage_grants: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          creator_id: string
+          environment: string
+          id: string
+          metric: string
+          note: string | null
+          period: string | null
+          provider_ref: string | null
+          source: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          creator_id: string
+          environment?: string
+          id?: string
+          metric: string
+          note?: string | null
+          period?: string | null
+          provider_ref?: string | null
+          source?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          creator_id?: string
+          environment?: string
+          id?: string
+          metric?: string
+          note?: string | null
+          period?: string | null
+          provider_ref?: string | null
+          source?: string
         }
         Relationships: []
       }
