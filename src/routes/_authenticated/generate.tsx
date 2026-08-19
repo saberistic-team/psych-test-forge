@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/generate")({
+  validateSearch: (search: Record<string, unknown>): { prompt?: string | undefined } => ({
+    prompt: typeof search["prompt"] === "string" ? (search["prompt"] as string).slice(0, 2000) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Generate a questionnaire — Psych Lab" },
@@ -85,7 +88,8 @@ function GeneratePage() {
   const fetchJob = useServerFn(getGenerationJob);
   const fetchJobs = useServerFn(listGenerationJobs);
 
-  const [request, setRequest] = useState("");
+  const { prompt: seededPrompt } = Route.useSearch();
+  const [request, setRequest] = useState(seededPrompt ?? "");
   const [pathHint, setPathHint] = useState<"auto" | "established" | "novel">("auto");
   const [model, setModel] = useState(GENERATION_MODELS[0]!.id);
   const [temperature, setTemperature] = useState(0.7);

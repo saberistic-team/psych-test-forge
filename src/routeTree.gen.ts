@@ -31,6 +31,9 @@ import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
+import { Route as TemplatesIndexRouteImport } from './routes/templates.index'
+import { Route as TemplatesSlugRouteImport } from './routes/templates.$slug'
+import { Route as ToolsLikertScoringCalculatorRouteImport } from './routes/tools.likert-scoring-calculator'
 import { Route as AuthenticatedTestsIndexRouteImport } from './routes/_authenticated/tests.index'
 import { Route as AuthenticatedTestsIdRouteImport } from './routes/_authenticated/tests.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -145,6 +148,22 @@ const TakeCodeRoute = TakeCodeRouteImport.update({
   path: '/take/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesIndexRoute = TemplatesIndexRouteImport.update({
+  id: '/templates/',
+  path: '/templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TemplatesSlugRoute = TemplatesSlugRouteImport.update({
+  id: '/templates/$slug',
+  path: '/templates/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsLikertScoringCalculatorRoute =
+  ToolsLikertScoringCalculatorRouteImport.update({
+    id: '/tools/likert-scoring-calculator',
+    path: '/tools/likert-scoring-calculator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTestsIndexRoute = AuthenticatedTestsIndexRouteImport.update({
   id: '/tests/',
   path: '/tests/',
@@ -183,7 +202,10 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
+  '/templates/': typeof TemplatesIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests/': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -209,7 +231,10 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take': typeof TakeIndexRoute
+  '/templates': typeof TemplatesIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -237,7 +262,10 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
+  '/templates/': typeof TemplatesIndexRoute
   '/_authenticated/tests/$id': typeof AuthenticatedTestsIdRoute
   '/_authenticated/tests/': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -265,7 +293,10 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
+    | '/tools/likert-scoring-calculator'
     | '/take/'
+    | '/templates/'
     | '/tests/$id'
     | '/tests/'
     | '/api/public/payments/webhook'
@@ -291,7 +322,10 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
+    | '/tools/likert-scoring-calculator'
     | '/take'
+    | '/templates'
     | '/tests/$id'
     | '/tests'
     | '/api/public/payments/webhook'
@@ -318,7 +352,10 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
+    | '/tools/likert-scoring-calculator'
     | '/take/'
+    | '/templates/'
     | '/_authenticated/tests/$id'
     | '/_authenticated/tests/'
     | '/api/public/payments/webhook'
@@ -336,7 +373,10 @@ export interface RootRouteChildren {
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
+  TemplatesSlugRoute: typeof TemplatesSlugRoute
+  ToolsLikertScoringCalculatorRoute: typeof ToolsLikertScoringCalculatorRoute
   TakeIndexRoute: typeof TakeIndexRoute
+  TemplatesIndexRoute: typeof TemplatesIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -496,6 +536,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TakeCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates/': {
+      id: '/templates/'
+      path: '/templates'
+      fullPath: '/templates/'
+      preLoaderRoute: typeof TemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/templates/$slug': {
+      id: '/templates/$slug'
+      path: '/templates/$slug'
+      fullPath: '/templates/$slug'
+      preLoaderRoute: typeof TemplatesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/likert-scoring-calculator': {
+      id: '/tools/likert-scoring-calculator'
+      path: '/tools/likert-scoring-calculator'
+      fullPath: '/tools/likert-scoring-calculator'
+      preLoaderRoute: typeof ToolsLikertScoringCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tests/': {
       id: '/_authenticated/tests/'
       path: '/tests'
@@ -574,7 +635,10 @@ const rootRouteChildren: RootRouteChildren = {
     GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
+  TemplatesSlugRoute: TemplatesSlugRoute,
+  ToolsLikertScoringCalculatorRoute: ToolsLikertScoringCalculatorRoute,
   TakeIndexRoute: TakeIndexRoute,
+  TemplatesIndexRoute: TemplatesIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

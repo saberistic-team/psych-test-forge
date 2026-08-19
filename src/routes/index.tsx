@@ -253,6 +253,12 @@ function Landing() {
             <Link to="/explore" className="hover:text-foreground">
               Explore
             </Link>
+            <Link to="/templates" className="hover:text-foreground">
+              Templates
+            </Link>
+            <Link to="/tools/likert-scoring-calculator" className="hover:text-foreground">
+              Scoring calculator
+            </Link>
             <Link to="/guides/what-is-the-big-five-personality-test" className="hover:text-foreground">
               Big Five guide
             </Link>
