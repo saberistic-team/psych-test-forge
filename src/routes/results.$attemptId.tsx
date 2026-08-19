@@ -21,9 +21,19 @@ export const Route = createFileRoute("/results/$attemptId")({
   head: () => ({
     meta: [
       { title: "Your results — Psych Lab" },
-      { name: "description", content: "Your subscale scores, bands and interpretation for this assessment." },
+      {
+        name: "description",
+        content:
+          "Your own section scores and the score-range text the creator wrote in advance for this questionnaire.",
+      },
       { property: "og:title", content: "Your results — Psych Lab" },
-      { property: "og:description", content: "Scored subscales, interpretation bands and cohort comparison." },
+      {
+        property: "og:description",
+        content: "Arithmetic scores from your own answers, with the creator's pre-written score-range text.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+
       { name: "robots", content: "noindex" },
     ],
   }),
