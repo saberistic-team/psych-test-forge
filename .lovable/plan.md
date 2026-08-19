@@ -1,6 +1,6 @@
-# Fix generation credits and make failures rare
+# Fix generation credits, survivable jobs, and make failures rare
 
-Two problems today: a failed generation still burns a monthly generation credit, and the self-repair loop gives the model weak, repetitive feedback so a bad first draft often stays bad.
+Three problems today: a failed generation still burns a monthly generation credit, a run only lives inside the open page (navigate away and it is lost; fail and it is gone with no retry), and the self-repair loop gives the model weak, repetitive feedback so a bad first draft often stays bad.
 
 ## 1. Only charge for successful generations
 
