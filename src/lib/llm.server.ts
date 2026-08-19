@@ -80,13 +80,29 @@ export function extractJson(text: string): unknown {
   throw new Error("The model response contained unbalanced JSON.");
 }
 
-async function callModel(
+/** Gateway failure with an explicit retryability flag (see gateway error semantics). */
+export class GatewayError extends Error {
+  status: number;
+  retryable: boolean;
+  retryAfterSeconds: number | null;
+  constructor(message: string, status: number, retryable: boolean, retryAfterSeconds: number | null = null) {
+    super(message);
+    this.name = "GatewayError";
+    this.status = status;
+    this.retryable = retryable;
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function callModelOnce(
   messages: { role: string; content: string }[],
   model: string,
   temperature: number,
 ): Promise<string> {
   const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("The AI gateway is not configured for this project.");
+  if (!apiKey) throw new GatewayError("The AI gateway is not configured for this project.", 401, false);
   const body: Record<string, unknown> = { model, messages, stream: false };
   if (!model.startsWith("openai/gpt-5")) body["temperature"] = temperature;
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -94,13 +110,59 @@ async function callModel(
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (res.status === 429) throw new Error("The AI service is rate limited right now. Please retry in a moment.");
-  if (res.status === 402) throw new Error("AI credits are exhausted for this workspace.");
-  if (!res.ok) throw new Error(`The AI service returned ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  if (res.status === 429) {
+    const ra = Number(res.headers.get("Retry-After"));
+    throw new GatewayError(
+      "The AI service is rate limited right now.",
+      429,
+      true,
+      Number.isFinite(ra) && ra > 0 ? ra : null,
+    );
+  }
+  if (res.status === 402)
+    throw new GatewayError("AI credits are exhausted for this workspace. Add credits and try again.", 402, false);
+  if (res.status === 403)
+    throw new GatewayError("AI access is blocked by a workspace policy or limit.", 403, false);
+  if (res.status === 400)
+    throw new GatewayError(
+      `The selected model rejected the request: ${(await res.text()).slice(0, 300)}`,
+      400,
+      false,
+    );
+  if (!res.ok)
+    throw new GatewayError(
+      `The AI service returned ${res.status}: ${(await res.text()).slice(0, 300)}`,
+      res.status,
+      res.status >= 500,
+    );
   const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
   const content = json.choices?.[0]?.message?.content;
-  if (!content) throw new Error("The AI service returned an empty response.");
+  if (!content) throw new GatewayError("The AI service returned an empty response.", 502, true);
   return content;
+}
+
+/**
+ * Calls the model, transparently retrying transport failures (429 / 5xx) with backoff.
+ * Terminal statuses (400/401/402/403) throw immediately — they never improve on retry.
+ */
+async function callModel(
+  messages: { role: string; content: string }[],
+  model: string,
+  temperature: number,
+): Promise<string> {
+  let lastErr: unknown;
+  for (let transportTry = 1; transportTry <= 3; transportTry++) {
+    try {
+      return await callModelOnce(messages, model, temperature);
+    } catch (err) {
+      lastErr = err;
+      const g = err as GatewayError;
+      if (!(g instanceof GatewayError) || !g.retryable || transportTry === 3) throw err;
+      const waitMs = g.retryAfterSeconds ? g.retryAfterSeconds * 1000 : 1500 * transportTry + Math.random() * 500;
+      await sleep(waitMs);
+    }
+  }
+  throw lastErr as Error;
 }
 
 /** Generates a spec with up to two self-repair rounds against the validation errors. */
