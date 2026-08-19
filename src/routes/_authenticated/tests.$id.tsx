@@ -14,6 +14,7 @@ import {
 import { specSchema } from "@/lib/spec";
 import { VisualsPanel } from "@/components/visuals/VisualsPanel";
 import { MarketplacePanel } from "@/components/MarketplacePanel";
+import { EmbedPanel } from "@/components/EmbedPanel";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -174,6 +175,17 @@ function TestDetail() {
           ) : null}
         </div>
       )}
+
+      <div className="mt-5">
+        <EmbedPanel
+          testId={id}
+          code={test.data.access_code}
+          published={test.data.published}
+          hideAttribution={test.data.hide_attribution ?? false}
+          isPaidPlan={(account.data?.plan?.id ?? "free") !== "free"}
+          onChanged={() => void qc.invalidateQueries({ queryKey: ["test", id] })}
+        />
+      </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-8">
         <TabsList>
