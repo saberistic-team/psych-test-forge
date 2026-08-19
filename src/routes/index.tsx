@@ -125,19 +125,20 @@ function Landing() {
           {[
             {
               icon: Sparkles,
-              title: "Two decision paths",
-              body: "Name an established instrument and it is reproduced with its original scale, bands and citations. Describe an open angle and the model chooses a construct, anchors it in theory and designs 3–6 subscales.",
+              title: "Two drafting paths",
+              body: "Name a questionnaire format you already know and get a draft in that shape, or describe an open topic and get a themed draft with 3–6 sections. Either way it is a starting document you edit.",
             },
             {
               icon: ShieldCheck,
-              title: "Validated before it ships",
-              body: "Every spec is checked against a strict schema. If it fails, the exact errors go back to the model in a self-repair loop, so what you publish actually scores.",
+              title: "You approve every word",
+              body: "Drafts are checked against a strict schema so they load and add up, then wait in your library until you review, edit and choose to publish. Nothing is published automatically.",
             },
             {
               icon: LineChart,
-              title: "Scored and interpreted",
-              body: "Reverse-scoring, attention checks, subscale and overall bands, cohort comparison and narrative interpretation — all computed server-side.",
+              title: "Fixed arithmetic scoring",
+              body: "Sum or mean of the response scale with reverse-scored items and attention checks. Each score range shows the text you wrote in advance — no AI looks at anyone's answers.",
             },
+
           ].map((f) => (
             <div key={f.title} className="surface p-6">
               <span className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
