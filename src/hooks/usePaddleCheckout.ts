@@ -39,5 +39,27 @@ export function usePaddleCheckout() {
     }
   };
 
-  return { openCheckout, loading };
+  /** Opens checkout for a server-created transaction (creator-priced listings). */
+  const openTransaction = async (transactionId: string, successUrl?: string) => {
+    setLoading(true);
+    try {
+      await initializePaddle();
+      window.Paddle.Checkout.open({
+        transactionId,
+        settings: {
+          displayMode: "overlay",
+          successUrl: successUrl || window.location.href,
+          allowLogout: false,
+          variant: "one-page",
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not open checkout. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { openCheckout, openTransaction, loading };
 }
