@@ -203,7 +203,8 @@ function ResultsPage() {
                       ) : null
                     ) : (
                       <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                        <Lock className="size-3.5" /> Written interpretation available in the full report
+                        <Lock className="size-3.5" /> The creator's pre-written text for this score range is part of the
+                        extended write-up
                       </p>
                     )}
                   </div>
@@ -216,13 +217,15 @@ function ResultsPage() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 size-5 text-accent" />
                   <div>
-                    <h2 className="font-display text-xl font-semibold">Unlock the full report</h2>
+                    <h2 className="font-display text-xl font-semibold">Unlock the extended write-up</h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      Get the written interpretation for every subscale, your cohort percentile context and the
-                      reflection prompts written for this instrument.
+                      See the text the creator wrote in advance for each section's score range, how your score compares
+                      with everyone else who answered, and the reflection prompts they included. Nothing here is
+                      generated about you — everyone in the same range sees the same words.
                     </p>
                   </div>
                 </div>
+
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Button onClick={() => void buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
                     {checkoutLoading ? <Loader2 className="size-4 animate-spin" /> : null}
