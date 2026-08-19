@@ -165,52 +165,126 @@ async function callModel(
   throw lastErr as Error;
 }
 
-/** Generates a spec with up to two self-repair rounds against the validation errors. */
+/** Per-error "how to fix" guidance so repair rounds are targeted instead of a blind rewrite. */
+function repairHint(error: string): string | null {
+  const e = error.toLowerCase();
+  if (e.includes("not listed in meta.subscales"))
+    return "add the missing subscale to meta.subscales, or change the item's subscale to one that is already listed — the two lists must match exactly, including capitalisation";
+  if (e.includes("interpretation.per_subscale is missing"))
+    return "add one interpretation entry per subscale in meta.subscales, each with text for every band name used in scoring.subscale_scores.ranges";
+  if (e.includes("attention check") || e.includes("is_attention_check"))
+    return "include at least one item with is_attention_check=true and a numeric expected_answer inside the response scale, or set scoring.validity_check.enabled=false";
+  if (e.includes("results") && (e.includes("style") || e.includes("invalid option")))
+    return `visuals.results.style must be EXACTLY one of ${RESULTS_STYLES.join(" | ")} (lowercase, no other words); radar needs 3+ subscales`;
+  if (e.includes("hex color") || e.includes("gradient") || e.includes("accent"))
+    return "every colour must be a 6-digit hex string starting with # (e.g. #1B2A4A) — no colour names, rgb() or 8-digit values";
+  if (e.includes("visuals"))
+    return "include the complete visuals block: icon {type,value,style}, banner {gradient:[hex,hex],pattern,accent,caption}, results {style,theme,description}";
+  if (e.includes("labels"))
+    return "instructions.response_scale.labels needs one string label for EVERY integer from min to max, keyed as strings";
+  if (e.includes("ranges"))
+    return "define at least two bands, use the SAME band names in scoring.subscale_scores.ranges, scoring.overall_score.ranges, interpretation.per_subscale and interpretation.overall, and keep min/max consistent with the response scale and scoring.method";
+  if (e.includes("disclaimer"))
+    return 'rewrite interpretation.disclaimer with non-clinical wording — never "diagnose", "treat", "cure" or "confirm"; use "indicates a tendency / invites reflection"';
+  if (e.includes("item ids"))
+    return "give every item a unique id such as q01, q02, q03";
+  if (e.includes("expected") && e.includes("array"))
+    return "that field must be a JSON array";
+  return null;
+}
+
+function buildRepairMessage(errors: string[], strict: boolean): string {
+  const lines = errors.slice(0, 25).map((err) => {
+    const hint = repairHint(err);
+    return hint ? `- ${err}\n  → fix: ${hint}` : `- ${err}`;
+  });
+  return (
+    `Your JSON is close, but these exact validation errors remain:\n${lines.join("\n")}\n\n` +
+    `Fix ONLY these problems. Keep every other field byte-identical — do not rewrite the items, ` +
+    `rename subscales, or change the construct.` +
+    (strict
+      ? ` This is the last chance: be literal, re-read the schema, and double-check band names and enum spellings before answering.`
+      : "") +
+    ` Return ONLY the complete corrected JSON object, no prose and no code fences.`
+  );
+}
+
+export type GenerationStage =
+  | { kind: "drafting"; attempt: number; model: string }
+  | { kind: "validating"; attempt: number }
+  | { kind: "repairing"; attempt: number; errors: string[] };
+
+const FALLBACK_MODEL = "openai/gpt-5.4";
+
+/**
+ * Generates a spec with escalating self-repair rounds:
+ * 1 draft → 2 targeted repair → 3 targeted repair at low temperature → 4 repair on a fallback model.
+ * Mechanical problems are fixed locally by `coerceSpec` before each validation pass, so the model
+ * only ever has to fix things that genuinely need judgement.
+ */
 export async function generateSpec(opts: {
   request: string;
   pathHint: string;
   model: string;
   temperature: number;
-}): Promise<{ spec: TestSpec; attempts: number }> {
+  onStage?: (stage: GenerationStage) => void | Promise<void>;
+}): Promise<{ spec: TestSpec; attempts: number; history: string[][] }> {
+  const { coerceSpec } = await import("./spec-coerce");
   const userPrompt = MASTER_PROMPT + opts.request + pathDirective(opts.pathHint);
   const messages: { role: string; content: string }[] = [{ role: "user", content: userPrompt }];
-  let lastErrors: string[] = [];
+  const history: string[][] = [];
+  const MAX_ATTEMPTS = 4;
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const model = attempt === MAX_ATTEMPTS && opts.model !== FALLBACK_MODEL ? FALLBACK_MODEL : opts.model;
+    const temperature = attempt >= 3 ? Math.min(opts.temperature, 0.2) : opts.temperature;
+    await opts.onStage?.({ kind: "drafting", attempt, model });
+
     let text: string;
     try {
-      text = await callModel(messages, opts.model, opts.temperature);
+      text = await callModel(messages, model, temperature);
     } catch (err) {
-      if (attempt === 3) throw err;
-      lastErrors = [(err as Error).message];
+      const gateway = err as GatewayError;
+      // Terminal gateway failures never improve with another attempt.
+      if (gateway instanceof GatewayError && !gateway.retryable) {
+        (gateway as Error & { details?: string[] }).details = history.flat();
+        throw gateway;
+      }
+      history.push([(err as Error).message]);
+      if (attempt === MAX_ATTEMPTS) throw err;
       continue;
     }
+
+    await opts.onStage?.({ kind: "validating", attempt });
 
     let candidate: unknown;
     try {
       candidate = extractJson(text);
     } catch (err) {
-      lastErrors = [(err as Error).message];
+      const parseError = (err as Error).message;
+      history.push([parseError]);
+      if (attempt === MAX_ATTEMPTS) break;
       messages.push({ role: "assistant", content: text.slice(0, 4000) });
       messages.push({
         role: "user",
-        content: `Your output could not be parsed: ${lastErrors.join("; ")}. Return ONLY the corrected JSON object.`,
+        content: `Your output could not be parsed as JSON: ${parseError}. Return ONLY one complete JSON object — no prose, no fences, no trailing commas.`,
       });
       continue;
     }
 
+    candidate = coerceSpec(candidate);
     const { spec, errors } = validateSpec(candidate, { requireVisuals: true });
-    if (spec) return { spec, attempts: attempt };
-    lastErrors = errors;
-    messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 12000) });
-    messages.push({
-      role: "user",
-      content:
-        `Your JSON failed schema validation with these exact errors:\n- ${errors.join("\n- ")}\n\n` +
-        `Fix every error and return ONLY the complete corrected JSON object.`,
-    });
+    if (spec) return { spec, attempts: attempt, history };
+
+    history.push(errors);
+    if (attempt === MAX_ATTEMPTS) break;
+    await opts.onStage?.({ kind: "repairing", attempt: attempt + 1, errors });
+    messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 14000) });
+    messages.push({ role: "user", content: buildRepairMessage(errors, attempt >= MAX_ATTEMPTS - 1) });
   }
-  const err = new Error("The model could not produce a schema-valid spec after 3 attempts.");
+
+  const lastErrors = history[history.length - 1] ?? [];
+  const err = new Error(`The model could not produce a schema-valid spec after ${MAX_ATTEMPTS} attempts.`);
   (err as Error & { details?: string[] }).details = lastErrors;
   throw err;
 }
@@ -256,14 +330,14 @@ export async function generateVisualsBlock(opts: {
       messages.push({ role: "user", content: `That could not be parsed: ${lastError}. Return ONLY the JSON object.` });
       continue;
     }
-    const parsed = visualsSchema.safeParse(candidate);
+    const { coerceSpec } = await import("./spec-coerce");
+    const coerced = coerceSpec({ visuals: candidate }) as { visuals?: unknown };
+    const parsed = visualsSchema.safeParse(coerced.visuals ?? candidate);
     if (parsed.success) return parsed.data;
-    lastError = parsed.error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`).join("; ");
+    const issues = parsed.error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`);
+    lastError = issues.join("; ");
     messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 2000) });
-    messages.push({
-      role: "user",
-      content: `Your JSON failed validation: ${lastError}. Fix it and return ONLY the corrected JSON object.`,
-    });
+    messages.push({ role: "user", content: buildRepairMessage(issues, attempt >= 2) });
   }
   throw new Error(`The model could not produce a valid visuals block: ${lastError}`);
 }
