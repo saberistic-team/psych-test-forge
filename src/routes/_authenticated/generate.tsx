@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/generate")({
-  validateSearch: (search: Record<string, unknown>): { prompt?: string } => ({
-    prompt: typeof search.prompt === "string" ? search.prompt.slice(0, 2000) : undefined,
+  validateSearch: (search: Record<string, unknown>): { prompt?: string | undefined } => ({
+    prompt: typeof search["prompt"] === "string" ? (search["prompt"] as string).slice(0, 2000) : undefined,
   }),
   head: () => ({
     meta: [
