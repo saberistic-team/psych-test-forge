@@ -17,7 +17,6 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
@@ -32,6 +31,7 @@ import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
+import { Route as TemplatesIndexRouteImport } from './routes/templates.index'
 import { Route as ToolsLikertScoringCalculatorRouteImport } from './routes/tools.likert-scoring-calculator'
 import { Route as AuthenticatedTestsIndexRouteImport } from './routes/_authenticated/tests.index'
 import { Route as AuthenticatedTestsIdRouteImport } from './routes/_authenticated/tests.$id'
@@ -74,11 +74,6 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TemplatesRoute = TemplatesRouteImport.update({
-  id: '/templates',
-  path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -152,6 +147,11 @@ const TakeCodeRoute = TakeCodeRouteImport.update({
   path: '/take/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesIndexRoute = TemplatesIndexRouteImport.update({
+  id: '/templates/',
+  path: '/templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsLikertScoringCalculatorRoute =
   ToolsLikertScoringCalculatorRouteImport.update({
     id: '/tools/likert-scoring-calculator',
@@ -183,7 +183,6 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/templates': typeof TemplatesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -199,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/take/$code': typeof TakeCodeRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
+  '/templates/': typeof TemplatesIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests/': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -211,7 +211,6 @@ export interface FileRoutesByTo {
   '/legal': typeof LegalRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/templates': typeof TemplatesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
@@ -227,6 +226,7 @@ export interface FileRoutesByTo {
   '/take/$code': typeof TakeCodeRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take': typeof TakeIndexRoute
+  '/templates': typeof TemplatesIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -241,7 +241,6 @@ export interface FileRoutesById {
   '/legal': typeof LegalRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/templates': typeof TemplatesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
@@ -257,6 +256,7 @@ export interface FileRoutesById {
   '/take/$code': typeof TakeCodeRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
+  '/templates/': typeof TemplatesIndexRoute
   '/_authenticated/tests/$id': typeof AuthenticatedTestsIdRoute
   '/_authenticated/tests/': typeof AuthenticatedTestsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -271,7 +271,6 @@ export interface FileRouteTypes {
     | '/legal'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/templates'
     | '/admin'
     | '/analytics'
     | '/billing'
@@ -287,6 +286,7 @@ export interface FileRouteTypes {
     | '/take/$code'
     | '/tools/likert-scoring-calculator'
     | '/take/'
+    | '/templates/'
     | '/tests/$id'
     | '/tests/'
     | '/api/public/payments/webhook'
@@ -299,7 +299,6 @@ export interface FileRouteTypes {
     | '/legal'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/templates'
     | '/admin'
     | '/analytics'
     | '/billing'
@@ -315,6 +314,7 @@ export interface FileRouteTypes {
     | '/take/$code'
     | '/tools/likert-scoring-calculator'
     | '/take'
+    | '/templates'
     | '/tests/$id'
     | '/tests'
     | '/api/public/payments/webhook'
@@ -328,7 +328,6 @@ export interface FileRouteTypes {
     | '/legal'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/templates'
     | '/_authenticated/admin'
     | '/_authenticated/analytics'
     | '/_authenticated/billing'
@@ -344,6 +343,7 @@ export interface FileRouteTypes {
     | '/take/$code'
     | '/tools/likert-scoring-calculator'
     | '/take/'
+    | '/templates/'
     | '/_authenticated/tests/$id'
     | '/_authenticated/tests/'
     | '/api/public/payments/webhook'
@@ -358,12 +358,12 @@ export interface RootRouteChildren {
   LegalRoute: typeof LegalRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TemplatesRoute: typeof TemplatesRoute
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
   ToolsLikertScoringCalculatorRoute: typeof ToolsLikertScoringCalculatorRoute
   TakeIndexRoute: typeof TakeIndexRoute
+  TemplatesIndexRoute: typeof TemplatesIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -423,13 +423,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/templates': {
-      id: '/templates'
-      path: '/templates'
-      fullPath: '/templates'
-      preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -530,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TakeCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates/': {
+      id: '/templates/'
+      path: '/templates'
+      fullPath: '/templates/'
+      preLoaderRoute: typeof TemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tools/likert-scoring-calculator': {
       id: '/tools/likert-scoring-calculator'
       path: '/tools/likert-scoring-calculator'
@@ -611,13 +611,13 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRoute: LegalRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TemplatesRoute: TemplatesRoute,
   GuidesWhatIsTheBigFivePersonalityTestRoute:
     GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
   ToolsLikertScoringCalculatorRoute: ToolsLikertScoringCalculatorRoute,
   TakeIndexRoute: TakeIndexRoute,
+  TemplatesIndexRoute: TemplatesIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
