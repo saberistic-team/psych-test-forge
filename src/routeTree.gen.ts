@@ -31,6 +31,7 @@ import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptId'
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
+import { Route as ToolsLikertScoringCalculatorRouteImport } from './routes/tools.likert-scoring-calculator'
 import { Route as AuthenticatedTestsIndexRouteImport } from './routes/_authenticated/tests.index'
 import { Route as AuthenticatedTestsIdRouteImport } from './routes/_authenticated/tests.$id'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -145,6 +146,12 @@ const TakeCodeRoute = TakeCodeRouteImport.update({
   path: '/take/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsLikertScoringCalculatorRoute =
+  ToolsLikertScoringCalculatorRouteImport.update({
+    id: '/tools/likert-scoring-calculator',
+    path: '/tools/likert-scoring-calculator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedTestsIndexRoute = AuthenticatedTestsIndexRouteImport.update({
   id: '/tests/',
   path: '/tests/',
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests/': typeof AuthenticatedTestsIndexRoute
@@ -209,6 +217,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take': typeof TakeIndexRoute
   '/tests/$id': typeof AuthenticatedTestsIdRoute
   '/tests': typeof AuthenticatedTestsIndexRoute
@@ -237,6 +246,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
   '/_authenticated/tests/$id': typeof AuthenticatedTestsIdRoute
   '/_authenticated/tests/': typeof AuthenticatedTestsIndexRoute
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/tools/likert-scoring-calculator'
     | '/take/'
     | '/tests/$id'
     | '/tests/'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/tools/likert-scoring-calculator'
     | '/take'
     | '/tests/$id'
     | '/tests'
@@ -318,6 +330,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/tools/likert-scoring-calculator'
     | '/take/'
     | '/_authenticated/tests/$id'
     | '/_authenticated/tests/'
@@ -336,6 +349,7 @@ export interface RootRouteChildren {
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
+  ToolsLikertScoringCalculatorRoute: typeof ToolsLikertScoringCalculatorRoute
   TakeIndexRoute: typeof TakeIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -496,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TakeCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/likert-scoring-calculator': {
+      id: '/tools/likert-scoring-calculator'
+      path: '/tools/likert-scoring-calculator'
+      fullPath: '/tools/likert-scoring-calculator'
+      preLoaderRoute: typeof ToolsLikertScoringCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tests/': {
       id: '/_authenticated/tests/'
       path: '/tests'
@@ -574,6 +595,7 @@ const rootRouteChildren: RootRouteChildren = {
     GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
+  ToolsLikertScoringCalculatorRoute: ToolsLikertScoringCalculatorRoute,
   TakeIndexRoute: TakeIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
