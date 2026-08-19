@@ -15,17 +15,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore psychological tests — Psych Lab" },
+      { title: "Explore self-reflection questionnaires — Psych Lab" },
       {
         name: "description",
         content:
-          "Browse public, AI-authored psychological assessments on Psych Lab: personality, resilience, motivation and more — free to take in minutes.",
+          "Browse public self-report questionnaires published by Psych Lab creators: personality, resilience, motivation and more — free to take in minutes, for curiosity and self-reflection.",
       },
-      { property: "og:title", content: "Explore psychological tests — Psych Lab" },
+      { property: "og:title", content: "Explore self-reflection questionnaires — Psych Lab" },
       {
         property: "og:description",
-        content: "A public marketplace of scored, theory-grounded self-report instruments you can take right now.",
+        content:
+          "Public self-report questionnaires you can answer right now, with your own arithmetic scores shown back to you.",
       },
+
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
