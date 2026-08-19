@@ -32,6 +32,7 @@ import { Route as ResultsAttemptIdRouteImport } from './routes/results.$attemptI
 import { Route as TakeIndexRouteImport } from './routes/take.index'
 import { Route as TakeCodeRouteImport } from './routes/take.$code'
 import { Route as TemplatesIndexRouteImport } from './routes/templates.index'
+import { Route as TemplatesSlugRouteImport } from './routes/templates.$slug'
 import { Route as ToolsLikertScoringCalculatorRouteImport } from './routes/tools.likert-scoring-calculator'
 import { Route as AuthenticatedTestsIndexRouteImport } from './routes/_authenticated/tests.index'
 import { Route as AuthenticatedTestsIdRouteImport } from './routes/_authenticated/tests.$id'
@@ -152,6 +153,11 @@ const TemplatesIndexRoute = TemplatesIndexRouteImport.update({
   path: '/templates/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesSlugRoute = TemplatesSlugRouteImport.update({
+  id: '/templates/$slug',
+  path: '/templates/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToolsLikertScoringCalculatorRoute =
   ToolsLikertScoringCalculatorRouteImport.update({
     id: '/tools/likert-scoring-calculator',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
   '/templates/': typeof TemplatesIndexRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take': typeof TakeIndexRoute
   '/templates': typeof TemplatesIndexRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/results/$attemptId': typeof ResultsAttemptIdRoute
   '/take/$code': typeof TakeCodeRoute
+  '/templates/$slug': typeof TemplatesSlugRoute
   '/tools/likert-scoring-calculator': typeof ToolsLikertScoringCalculatorRoute
   '/take/': typeof TakeIndexRoute
   '/templates/': typeof TemplatesIndexRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
     | '/tools/likert-scoring-calculator'
     | '/take/'
     | '/templates/'
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
     | '/tools/likert-scoring-calculator'
     | '/take'
     | '/templates'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/results/$attemptId'
     | '/take/$code'
+    | '/templates/$slug'
     | '/tools/likert-scoring-calculator'
     | '/take/'
     | '/templates/'
@@ -361,6 +373,7 @@ export interface RootRouteChildren {
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
+  TemplatesSlugRoute: typeof TemplatesSlugRoute
   ToolsLikertScoringCalculatorRoute: typeof ToolsLikertScoringCalculatorRoute
   TakeIndexRoute: typeof TakeIndexRoute
   TemplatesIndexRoute: typeof TemplatesIndexRoute
@@ -530,6 +543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemplatesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates/$slug': {
+      id: '/templates/$slug'
+      path: '/templates/$slug'
+      fullPath: '/templates/$slug'
+      preLoaderRoute: typeof TemplatesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tools/likert-scoring-calculator': {
       id: '/tools/likert-scoring-calculator'
       path: '/tools/likert-scoring-calculator'
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
     GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
   TakeCodeRoute: TakeCodeRoute,
+  TemplatesSlugRoute: TemplatesSlugRoute,
   ToolsLikertScoringCalculatorRoute: ToolsLikertScoringCalculatorRoute,
   TakeIndexRoute: TakeIndexRoute,
   TemplatesIndexRoute: TemplatesIndexRoute,
