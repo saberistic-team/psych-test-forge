@@ -23,6 +23,7 @@ import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEarningsRouteImport } from './routes/_authenticated/earnings'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
+import { Route as EmbedCodeRouteImport } from './routes/embed.$code'
 import { Route as GuidesWhatIsTheBigFivePersonalityTestRouteImport } from './routes/guides.what-is-the-big-five-personality-test'
 import { Route as LegalAcceptableUseRouteImport } from './routes/legal.acceptable-use'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -106,6 +107,11 @@ const AuthenticatedGenerateRoute = AuthenticatedGenerateRouteImport.update({
   id: '/generate',
   path: '/generate',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const EmbedCodeRoute = EmbedCodeRouteImport.update({
+  id: '/embed/$code',
+  path: '/embed/$code',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GuidesWhatIsTheBigFivePersonalityTestRoute =
   GuidesWhatIsTheBigFivePersonalityTestRouteImport.update({
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/earnings': typeof AuthenticatedEarningsRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/embed/$code': typeof EmbedCodeRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/earnings': typeof AuthenticatedEarningsRoute
   '/generate': typeof AuthenticatedGenerateRoute
+  '/embed/$code': typeof EmbedCodeRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/earnings': typeof AuthenticatedEarningsRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
+  '/embed/$code': typeof EmbedCodeRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/earnings'
     | '/generate'
+    | '/embed/$code'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
     | '/legal/privacy'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/earnings'
     | '/generate'
+    | '/embed/$code'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
     | '/legal/privacy'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/earnings'
     | '/_authenticated/generate'
+    | '/embed/$code'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
     | '/legal/privacy'
@@ -370,6 +382,7 @@ export interface RootRouteChildren {
   LegalRoute: typeof LegalRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  EmbedCodeRoute: typeof EmbedCodeRoute
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
   TakeCodeRoute: typeof TakeCodeRoute
@@ -479,6 +492,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/generate'
       preLoaderRoute: typeof AuthenticatedGenerateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/embed/$code': {
+      id: '/embed/$code'
+      path: '/embed/$code'
+      fullPath: '/embed/$code'
+      preLoaderRoute: typeof EmbedCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/guides/what-is-the-big-five-personality-test': {
       id: '/guides/what-is-the-big-five-personality-test'
@@ -631,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRoute: LegalRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  EmbedCodeRoute: EmbedCodeRoute,
   GuidesWhatIsTheBigFivePersonalityTestRoute:
     GuidesWhatIsTheBigFivePersonalityTestRoute,
   ResultsAttemptIdRoute: ResultsAttemptIdRoute,
