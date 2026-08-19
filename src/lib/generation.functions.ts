@@ -16,10 +16,10 @@ export const startGeneration = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { checkAndCountGeneration } = await import("./usage.server");
+    const { checkAndCountGeneration, releaseGeneration } = await import("./usage.server");
     const gate = await checkAndCountGeneration(userId);
     if (!gate.allowed) {
-      return { blocked: true as const, reason: gate.reason, plan: gate.plan, jobId: null };
+      return { blocked: true as const, reason: gate.reason, plan: gate.plan, jobId: null, testId: null, errors: [] as string[], counted: false };
     }
 
     const { data: job, error: jobError } = await supabase
@@ -34,47 +34,61 @@ export const startGeneration = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (jobError || !job) throw new Error(jobError?.message ?? "Could not start the generation job.");
-
-    const { generateSpec } = await import("./llm.server");
-    try {
-      const { spec } = await generateSpec({
-        request: data.request,
-        pathHint: data.pathHint,
-        model: data.model,
-        temperature: data.temperature,
-      });
-      const { data: test, error: testError } = await supabase
-        .from("tests")
-        .insert({
-          creator_id: userId,
-          title: spec.instructions.title,
-          slug: spec.instructions.title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, "")
-            .slice(0, 60),
-          spec: JSON.parse(JSON.stringify(spec)),
-          published: false,
-        })
-        .select("id")
-        .single();
-      if (testError || !test) throw new Error(testError?.message ?? "Could not save the generated test.");
-
-      await supabase
-        .from("generation_jobs")
-        .update({ status: "done", test_id: test.id, errors: null })
-        .eq("id", job.id);
-      return { blocked: false as const, jobId: job.id, testId: test.id, errors: [] as string[] };
-    } catch (err) {
-      const message = (err as Error).message;
-      const details = (err as Error & { details?: string[] }).details ?? [];
-      await supabase
-        .from("generation_jobs")
-        .update({ status: "error", errors: { message, details } })
-        .eq("id", job.id);
-      return { blocked: false as const, jobId: job.id, testId: null, errors: [message, ...details] };
+    if (jobError || !job) {
+      await releaseGeneration(userId);
+      throw new Error(jobError?.message ?? "Could not start the generation job.");
     }
+
+    const { runGenerationJob } = await import("./generation.server");
+    const result = await runGenerationJob({
+      jobId: job.id,
+      userId,
+      request: data.request,
+      pathHint: data.pathHint,
+      model: data.model,
+      temperature: data.temperature,
+      counted: true,
+    });
+
+    if (!result.ok) {
+      // Failed runs are never charged against the plan.
+      await releaseGeneration(userId);
+      return { blocked: false as const, jobId: job.id, testId: null, errors: result.errors, counted: false };
+    }
+    return { blocked: false as const, jobId: job.id, testId: result.testId, errors: [] as string[], counted: true };
+  });
+
+/** Re-runs a failed job from its stored request. Retries are not charged another credit. */
+export const retryGeneration = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ jobId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: job } = await supabase
+      .from("generation_jobs")
+      .select("id, request, path_hint, model, temperature, status, creator_id")
+      .eq("id", data.jobId)
+      .maybeSingle();
+    if (!job || job.creator_id !== userId) {
+      return { ok: false as const, jobId: null, testId: null, errors: ["That generation run could not be found."] };
+    }
+    if (job.status === "running") {
+      return { ok: false as const, jobId: job.id, testId: null, errors: ["That run is still in progress."] };
+    }
+
+    const { runGenerationJob } = await import("./generation.server");
+    const result = await runGenerationJob({
+      jobId: job.id,
+      userId,
+      request: job.request,
+      pathHint: job.path_hint,
+      model: job.model,
+      temperature: Number(job.temperature),
+      counted: false,
+    });
+    return result.ok
+      ? { ok: true as const, jobId: job.id, testId: result.testId, errors: [] as string[] }
+      : { ok: false as const, jobId: job.id, testId: null, errors: result.errors };
   });
 
 export const getGenerationJob = createServerFn({ method: "POST" })
@@ -83,7 +97,7 @@ export const getGenerationJob = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: job, error } = await context.supabase
       .from("generation_jobs")
-      .select("id, status, errors, test_id, model, temperature, request, created_at")
+      .select("id, status, errors, test_id, model, temperature, request, path_hint, created_at, updated_at")
       .eq("id", data.id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -95,7 +109,8 @@ export const listGenerationJobs = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("generation_jobs")
-      .select("id, status, request, model, test_id, created_at")
+      .select("id, status, request, model, temperature, path_hint, test_id, errors, created_at, updated_at")
+      .eq("creator_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(10);
     if (error) throw new Error(error.message);
