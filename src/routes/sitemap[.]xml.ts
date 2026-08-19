@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { TEMPLATES } from "@/lib/templates";
 
 const BASE_URL = "https://getpsychlab.app";
 
