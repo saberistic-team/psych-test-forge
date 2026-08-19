@@ -190,12 +190,15 @@ function Landing() {
 
           <div className="surface mt-6 flex flex-wrap items-center justify-between gap-4 p-6">
             <div>
-              <h3 className="font-display text-lg font-semibold">For participants</h3>
+              <h3 className="font-display text-lg font-semibold">For respondents</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Free results always include your subscale scores and bands. Unlock the full narrative report for $
-                {(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} per test, or subscribe to Results+ at $
-                {(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month for unlimited reports, history and trends.
+                Free results always show your section scores and score ranges. Unlock the creator's extended write-up —
+                text written in advance, the same for everyone in that range — for $
+                {(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} per questionnaire, or subscribe to Results+
+                at ${(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month for unlimited unlocks, history and
+                your own trends over time.
               </p>
+
             </div>
             <Button asChild variant="secondary">
               <Link to="/take">I have a join code</Link>
