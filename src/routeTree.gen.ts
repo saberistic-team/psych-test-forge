@@ -21,6 +21,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedEarningsRouteImport } from './routes/_authenticated/earnings'
 import { Route as AuthenticatedGenerateRouteImport } from './routes/_authenticated/generate'
 import { Route as GuidesWhatIsTheBigFivePersonalityTestRouteImport } from './routes/guides.what-is-the-big-five-personality-test'
 import { Route as LegalAcceptableUseRouteImport } from './routes/legal.acceptable-use'
@@ -91,6 +92,11 @@ const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEarningsRoute = AuthenticatedEarningsRouteImport.update({
+  id: '/earnings',
+  path: '/earnings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGenerateRoute = AuthenticatedGenerateRouteImport.update({
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/earnings': typeof AuthenticatedEarningsRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/billing': typeof AuthenticatedBillingRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/earnings': typeof AuthenticatedEarningsRoute
   '/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/billing': typeof AuthenticatedBillingRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/earnings': typeof AuthenticatedEarningsRoute
   '/_authenticated/generate': typeof AuthenticatedGenerateRoute
   '/guides/what-is-the-big-five-personality-test': typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   '/legal/acceptable-use': typeof LegalAcceptableUseRoute
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/billing'
     | '/dashboard'
+    | '/earnings'
     | '/generate'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/billing'
     | '/dashboard'
+    | '/earnings'
     | '/generate'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/_authenticated/analytics'
     | '/_authenticated/billing'
     | '/_authenticated/dashboard'
+    | '/_authenticated/earnings'
     | '/_authenticated/generate'
     | '/guides/what-is-the-big-five-personality-test'
     | '/legal/acceptable-use'
@@ -414,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/earnings': {
+      id: '/_authenticated/earnings'
+      path: '/earnings'
+      fullPath: '/earnings'
+      preLoaderRoute: typeof AuthenticatedEarningsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/generate': {
       id: '/_authenticated/generate'
       path: '/generate'
@@ -506,6 +525,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedBillingRoute: typeof AuthenticatedBillingRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEarningsRoute: typeof AuthenticatedEarningsRoute
   AuthenticatedGenerateRoute: typeof AuthenticatedGenerateRoute
   AuthenticatedTestsIdRoute: typeof AuthenticatedTestsIdRoute
   AuthenticatedTestsIndexRoute: typeof AuthenticatedTestsIndexRoute
@@ -516,6 +536,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedBillingRoute: AuthenticatedBillingRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEarningsRoute: AuthenticatedEarningsRoute,
   AuthenticatedGenerateRoute: AuthenticatedGenerateRoute,
   AuthenticatedTestsIdRoute: AuthenticatedTestsIdRoute,
   AuthenticatedTestsIndexRoute: AuthenticatedTestsIndexRoute,

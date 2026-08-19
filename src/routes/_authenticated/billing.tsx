@@ -8,7 +8,15 @@ import { toast } from "sonner";
 
 import { getMyAccount } from "@/lib/tests.functions";
 import { createPortalSession, getMySubscription } from "@/utils/payments.functions";
-import { CREATOR_PLANS, PARTICIPANT_PRICING, limitLabel } from "@/lib/plans";
+import {
+  ADDON_PACKS,
+  CREATOR_PLANS,
+  PARTICIPANT_PRICING,
+  centsToUsd,
+  limitLabel,
+  packsForPlan,
+  type AddonPack,
+} from "@/lib/plans";
 import { CREATOR_PLAN_PRICES, YEARLY_PRICES, type BillingInterval } from "@/lib/paddle-catalog";
 import { getPaddleEnvironment } from "@/lib/paddle";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
@@ -55,10 +63,44 @@ function Billing() {
   const usage = account.data?.usage;
   const sub = subscription.data?.subscription ?? null;
 
+  const limits = account.data?.limits;
+  const grants = account.data?.grants;
   const meters = [
-    { label: "AI generations", used: usage?.generations ?? 0, limit: plan?.generations ?? null },
-    { label: "Participant attempts", used: usage?.attempts ?? 0, limit: plan?.attempts ?? null },
+    {
+      metric: "generations" as const,
+      label: "AI generations",
+      used: usage?.generations ?? 0,
+      limit: limits ? limits.generations : (plan?.generations ?? null),
+      extra: grants?.generations.total ?? 0,
+    },
+    {
+      metric: "attempts" as const,
+      label: "Participant responses",
+      used: usage?.attempts ?? 0,
+      limit: limits ? limits.attempts : (plan?.attempts ?? null),
+      extra: grants?.attempts.total ?? 0,
+    },
+    {
+      metric: "listings" as const,
+      label: "Marketplace listings",
+      used: account.data?.listings.used ?? 0,
+      limit: limits ? limits.listings : (plan?.listings ?? null),
+      extra: grants?.listings.total ?? 0,
+    },
   ];
+
+  const availablePacks = plan ? packsForPlan(plan) : [];
+  const canBuyPacks = plan?.id === "pro" || plan?.id === "business";
+
+  const buyPack = (pack: AddonPack) => {
+    if (!user) return;
+    void openCheckout({
+      priceId: pack.priceId,
+      customerEmail: user.email ?? undefined,
+      customData: { userId: user.id, packId: pack.id },
+      successUrl: `${window.location.origin}/billing?pack=success`,
+    });
+  };
 
   const startCheckout = (planId: "pro" | "business") => {
     if (!user) return;
@@ -90,7 +132,7 @@ function Billing() {
         </div>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             {meters.map((m) => (
               <div key={m.label} className="surface p-5">
                 <div className="flex items-baseline justify-between">
@@ -103,6 +145,9 @@ function Billing() {
                   className="mt-3"
                   value={m.limit === null ? 8 : Math.min(100, (m.used / Math.max(1, m.limit)) * 100)}
                 />
+                {m.extra > 0 ? (
+                  <p className="mt-2 text-xs text-muted-foreground">Includes {m.extra} extra from packs and grants.</p>
+                ) : null}
               </div>
             ))}
           </div>
@@ -183,6 +228,35 @@ function Billing() {
                       {current ? "Manage plan" : `Subscribe to ${p.name}`}
                     </Button>
                   )}
+                </div>
+              );
+            })}
+          </div>
+
+          <h2 className="mt-10 text-lg font-semibold">Add-on packs</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            One-off top-ups for the current month. They raise this month's allowance only and never roll over.
+          </p>
+          <div className="mt-4 grid gap-5 lg:grid-cols-3">
+            {ADDON_PACKS.map((pack) => {
+              const usable = availablePacks.some((p) => p.id === pack.id);
+              return (
+                <div key={pack.id} className="surface flex flex-col p-6">
+                  <p className="font-medium">{pack.name}</p>
+                  <p className="mt-2 font-display text-2xl font-semibold">{centsToUsd(pack.priceCents)}</p>
+                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{pack.description}</p>
+                  <Button
+                    className="mt-5"
+                    variant="outline"
+                    disabled={!canBuyPacks || !usable || checkoutLoading || !user}
+                    onClick={() => buyPack(pack)}
+                  >
+                    {!canBuyPacks
+                      ? "Pro or Business only"
+                      : !usable
+                        ? "Already unlimited on your plan"
+                        : `Buy for ${centsToUsd(pack.priceCents)}`}
+                  </Button>
                 </div>
               );
             })}

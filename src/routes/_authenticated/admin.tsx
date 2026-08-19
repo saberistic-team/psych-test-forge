@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { getAdminOverview, getMyAccount } from "@/lib/tests.functions";
 import { getAdminMarketplace, setListingFlags } from "@/lib/marketplace.functions";
@@ -10,6 +11,9 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CreatorAdminDialog } from "@/components/admin/CreatorAdminDialog";
+import { PayoutsPanel } from "@/components/admin/PayoutsPanel";
+import { AuditLogPanel } from "@/components/admin/AuditLogPanel";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -28,6 +32,7 @@ function Admin() {
   const overview = useQuery({ queryKey: ["admin-overview"], queryFn: useServerFn(getAdminOverview) });
   const qc = useQueryClient();
   const marketplace = useQuery({ queryKey: ["admin-marketplace"], queryFn: useServerFn(getAdminMarketplace) });
+  const [managing, setManaging] = useState<{ id: string; name: string } | null>(null);
   const setFlags = useServerFn(setListingFlags);
   const flagMutation = useMutation({
     mutationFn: (vars: { testId: string; featured?: boolean; verified?: boolean; listed?: boolean }) =>
@@ -81,6 +86,7 @@ function Admin() {
                   <TableHead>Tests</TableHead>
                   <TableHead>Live</TableHead>
                   <TableHead>Joined</TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -95,6 +101,15 @@ function Admin() {
                     <TableCell className="font-mono text-sm">{c.live}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {new Date(c.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setManaging({ id: c.id, name: c.name ?? c.org ?? "creator" })}
+                      >
+                        Manage
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -164,6 +179,18 @@ function Admin() {
               </Table>
             </div>
           )}
+
+          <PayoutsPanel />
+          <AuditLogPanel />
+
+          <CreatorAdminDialog
+            userId={managing?.id ?? null}
+            name={managing?.name ?? ""}
+            open={Boolean(managing)}
+            onOpenChange={(open) => {
+              if (!open) setManaging(null);
+            }}
+          />
         </>
       )}
     </AppShell>

@@ -5,6 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertCircle, ArrowLeft, ArrowRight, FlaskConical, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { getTestByCode, submitAttempt } from "@/lib/participant.functions";
+import { getListingAccess } from "@/lib/listings.functions";
+import { getPaddleEnvironment } from "@/lib/paddle";
+import { ListingPaywall } from "@/components/ListingPaywall";
 import { getParticipantId, getParticipantName, setParticipantName } from "@/lib/participant-id";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +82,19 @@ function TakePage() {
     queryFn: () => fetchTest({ data: { code } }),
   });
 
+  const fetchAccess = useServerFn(getListingAccess);
+  const test0 = query.data?.found ? query.data.test : null;
+  const needsPayment = Boolean(test0 && test0.saleMode === "take" && test0.priceCents > 0);
+  const access = useQuery({
+    queryKey: ["listing-access", test0?.id, participantId],
+    enabled: Boolean(needsPayment && test0 && participantId),
+    refetchInterval: (q) => (q.state.data?.paid ? false : 5000),
+    queryFn: () =>
+      fetchAccess({
+        data: { testId: test0!.id, participantId, environment: getPaddleEnvironment() },
+      }),
+  });
+
   const mutation = useMutation({
     mutationFn: (vars: { testId: string }) =>
       submit({
@@ -136,6 +152,27 @@ function TakePage() {
           <Button asChild className="mt-6">
             <Link to="/take">Try another code</Link>
           </Button>
+        </div>
+      </Shell>
+    );
+  }
+
+  if (needsPayment && !access.data?.paid) {
+    return (
+      <Shell>
+        <div className="surface overflow-hidden">
+          <TestBanner visuals={visualsOf(spec)} height={150} className="rounded-none" />
+        </div>
+        <h1 className="mt-6 font-display text-3xl font-semibold">{spec.instructions.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{spec.meta.construct}</p>
+        <div className="mt-6">
+          <ListingPaywall
+            testId={test.id}
+            participantId={participantId}
+            priceCents={test.priceCents}
+            mode="take"
+            onAlreadyPaid={() => void access.refetch()}
+          />
         </div>
       </Shell>
     );

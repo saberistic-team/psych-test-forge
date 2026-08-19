@@ -11,7 +11,7 @@ export const getTestByCode = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: test } = await supabaseAdmin
       .from("tests")
-      .select("id, title, spec, access_code, published, creator_id")
+      .select("id, title, spec, access_code, published, creator_id, price_cents, sale_mode")
       .eq("access_code", data.code.trim().toUpperCase())
       .is("deleted_at", null)
       .maybeSingle();
@@ -32,6 +32,8 @@ export const getTestByCode = createServerFn({ method: "POST" })
         spec: parsed.data,
         creatorPlan: profile?.plan ?? "free",
         creatorOrg: profile?.org ?? null,
+        priceCents: test.price_cents ?? 0,
+        saleMode: (test.sale_mode ?? "free") as "free" | "take" | "results",
       },
     };
   });
@@ -44,6 +46,7 @@ export const submitAttempt = createServerFn({ method: "POST" })
         participantId: z.string().min(6).max(64),
         participantName: z.string().max(80).nullish(),
         responses: z.record(z.string(), z.number()),
+        environment: z.enum(["sandbox", "live"]).default("live"),
       })
       .parse(input),
   )
@@ -51,7 +54,7 @@ export const submitAttempt = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: test } = await supabaseAdmin
       .from("tests")
-      .select("id, spec, published, creator_id")
+      .select("id, spec, published, creator_id, price_cents, sale_mode")
       .eq("id", data.testId)
       .is("deleted_at", null)
       .maybeSingle();
@@ -60,6 +63,20 @@ export const submitAttempt = createServerFn({ method: "POST" })
     const parsed = specSchema.safeParse(test.spec);
     if (!parsed.success) {
       return { ok: false as const, issues: {}, message: "This test's definition is invalid.", attemptId: null };
+    }
+
+    // Paid listings in "pay to take" mode must be settled before answers are accepted.
+    if ((test.sale_mode ?? "free") === "take" && (test.price_cents ?? 0) > 0) {
+      const { listingAccessState } = await import("./listings.functions");
+      const access = await listingAccessState(test.id, data.participantId, data.environment);
+      if (!access.paid) {
+        return {
+          ok: false as const,
+          issues: {},
+          message: "This questionnaire requires payment before you can submit your answers.",
+          attemptId: null,
+        };
+      }
     }
 
     const { checkAndCountAttempt } = await import("./usage.server");
@@ -118,7 +135,7 @@ export const getAttemptResult = createServerFn({ method: "POST" })
 
     const { data: test } = await supabaseAdmin
       .from("tests")
-      .select("id, title, spec, access_code, creator_id")
+      .select("id, title, spec, access_code, creator_id, price_cents, sale_mode")
       .eq("id", attempt.test_id)
       .maybeSingle();
     const parsed = specSchema.safeParse(test?.spec);
@@ -159,6 +176,12 @@ export const getAttemptResult = createServerFn({ method: "POST" })
       cohortAverages[key] = Number((cohortAverages[key]! / (counts[key] || 1)).toFixed(2));
     }
 
+    let listingUnlock = false;
+    if ((test.sale_mode ?? "free") === "results" && (test.price_cents ?? 0) > 0) {
+      const { listingAccessState } = await import("./listings.functions");
+      listingUnlock = (await listingAccessState(test.id, attempt.participant_id, data.environment)).paid;
+    }
+
     const subInPeriod = !sub?.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
     const resultsPlus = Boolean(sub) && subInPeriod &&
       ["active", "trialing", "past_due", "canceled"].includes(sub!.status);
@@ -166,13 +189,16 @@ export const getAttemptResult = createServerFn({ method: "POST" })
       found: true as const,
       result: {
         attemptId: attempt.id,
+        testId: test.id,
         participantName: attempt.participant_name,
         createdAt: attempt.created_at,
         testTitle: test.title,
         code: test.access_code,
         spec: parsed.data,
         scores: attempt.scores as unknown as ScoreResult,
-        premium: Boolean(report?.purchased) || resultsPlus,
+        premium: Boolean(report?.purchased) || resultsPlus || listingUnlock,
+        listingUnlock,
+        listingPriceCents: (test.sale_mode ?? "free") === "results" ? (test.price_cents ?? 0) : 0,
         resultsPlus,
         watermark: (profile?.plan ?? "free") === "free",
         creatorOrg: profile?.org ?? null,

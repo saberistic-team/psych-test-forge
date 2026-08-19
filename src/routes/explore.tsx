@@ -182,6 +182,14 @@ function ExplorePage() {
                           </Badge>
                         ) : null}
                         <Badge variant="secondary">{hero.construct}</Badge>
+                        {hero.saleMode !== "free" && hero.priceCents > 0 ? (
+                          <Badge variant="outline">
+                            ${(hero.priceCents / 100).toFixed(2)}{" "}
+                            {hero.saleMode === "take" ? "to answer" : "for full results"}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline">Free</Badge>
+                        )}
                       </div>
                       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                         {hero.description ?? hero.framework}
@@ -229,6 +237,15 @@ function ExplorePage() {
                             <BadgeCheck className="size-3" /> Verified
                           </Badge>
                         ) : null}
+                        {l.saleMode !== "free" && l.priceCents > 0 ? (
+                          <Badge variant="outline" className="text-xs">
+                            ${(l.priceCents / 100).toFixed(2)} {l.saleMode === "take" ? "to answer" : "for results"}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            Free
+                          </Badge>
+                        )}
                         {l.subscales.slice(0, 3).map((s) => (
                           <Badge key={s} variant="secondary" className="text-xs">
                             {s}

@@ -11,6 +11,7 @@ import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { getParticipantId } from "@/lib/participant-id";
 import { PARTICIPANT_PRICING } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
+import { ListingPaywall } from "@/components/ListingPaywall";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ResultsVisual } from "@/components/visuals/ResultsVisual";
@@ -212,7 +213,19 @@ function ResultsPage() {
               })}
             </div>
 
-            {!result.premium ? (
+            {!result.premium && result.listingPriceCents > 0 ? (
+              <div className="mt-8">
+                <ListingPaywall
+                  testId={result.testId}
+                  participantId={participantId}
+                  priceCents={result.listingPriceCents}
+                  mode="results"
+                  onAlreadyPaid={() => void query.refetch()}
+                />
+              </div>
+            ) : null}
+
+            {!result.premium && result.listingPriceCents === 0 ? (
               <div className="surface mt-8 p-6">
                 <div className="flex items-start gap-3">
                   <Sparkles className="mt-0.5 size-5 text-accent" />

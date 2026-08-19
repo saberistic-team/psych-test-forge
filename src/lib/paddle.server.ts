@@ -79,3 +79,48 @@ export async function verifyWebhook(request: Request, env: PaddleEnv): Promise<P
 
   return JSON.parse(raw) as PaddleWebhookEvent;
 }
+
+/**
+ * Creates a Paddle transaction for a price that is not in the catalog — used for
+ * creator-set marketplace prices. Paddle.js can then open a checkout for the
+ * returned transaction ID.
+ */
+export async function createAdHocTransaction(
+  env: PaddleEnv,
+  input: {
+    productExternalId: string;
+    amountCents: number;
+    currency?: string;
+    description: string;
+    customData: Record<string, string>;
+  },
+): Promise<string> {
+  const products = await gatewayJson<{ data?: { id: string }[] }>(
+    env,
+    `/products?external_id=${encodeURIComponent(input.productExternalId)}`,
+  );
+  const productId = products.data?.[0]?.id;
+  if (!productId) throw new Error("Marketplace product is not set up yet.");
+
+  const result = await gatewayJson<{ data?: { id?: string } }>(env, "/transactions", {
+    method: "POST",
+    body: JSON.stringify({
+      items: [
+        {
+          quantity: 1,
+          price: {
+            description: input.description.slice(0, 200),
+            product_id: productId,
+            unit_price: { amount: String(input.amountCents), currency_code: input.currency ?? "USD" },
+            quantity: { minimum: 1, maximum: 1 },
+          },
+        },
+      ],
+      custom_data: input.customData,
+      collection_mode: "automatic",
+    }),
+  });
+  const id = result.data?.id;
+  if (!id) throw new Error("Could not start checkout.");
+  return id;
+}
