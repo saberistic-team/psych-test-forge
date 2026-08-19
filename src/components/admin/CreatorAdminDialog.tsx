@@ -99,7 +99,10 @@ export function CreatorAdminDialog({
   const remove = useMutation({
     mutationFn: (grantId: string) => removeFn({ data: { grantId } }),
     onSuccess: async (res) => {
-      if (!res.ok) return toast.error(res.reason);
+      if (!res.ok) {
+        toast.error(res.reason);
+        return;
+      }
       toast.success("Grant removed.");
       await refresh();
     },
