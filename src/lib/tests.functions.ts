@@ -11,14 +11,22 @@ export const getMyAccount = createServerFn({ method: "GET" })
       supabase.from("profiles").select("id, name, org, plan, billing_cycle_start").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
-    const { readUsage, planForUser } = await import("./usage.server");
-    const [usage, plan] = await Promise.all([readUsage(userId), planForUser(userId)]);
+    const { readUsage, effectiveLimits, listingUsage } = await import("./usage.server");
+    const [usage, effective, listings] = await Promise.all([
+      readUsage(userId),
+      effectiveLimits(userId),
+      listingUsage(userId),
+    ]);
     return {
       profile,
       roles: (roles ?? []).map((r) => r.role as string),
       isAdmin: (roles ?? []).some((r) => r.role === "admin"),
       usage,
-      plan,
+      plan: effective.plan,
+      // Plan allowance plus purchased packs and admin grants for this month.
+      limits: effective.limits,
+      grants: effective.grants,
+      listings: { used: listings.used, limit: listings.limit },
     };
   });
 

@@ -96,12 +96,81 @@ async function handleSubscriptionCanceled(data: Record<string, any>, env: Paddle
   if (row?.user_id) await syncCreatorPlan(row.user_id, row.plan, "canceled", row.current_period_end);
 }
 
-/** One-time purchases: the participant report unlock. */
+/** A creator-priced marketplace sale: records the purchase and the earning line. */
+async function handleListingSale(data: Record<string, any>, env: PaddleEnv) {
+  const custom = (data["custom_data"] ?? {}) as Record<string, string>;
+  const testId = custom["testId"];
+  const participantId = custom["participantId"];
+  if (!testId || !participantId) {
+    console.error("Listing purchase missing testId/participantId", data["id"]);
+    return;
+  }
+  const totals = data["details"]?.totals ?? {};
+  const { recordListingSale } = await import("@/lib/earnings.server");
+  await recordListingSale({
+    testId,
+    participantId,
+    buyerUserId: custom["userId"] ?? null,
+    mode: custom["mode"] === "take" ? "take" : "results",
+    amountCents: Number(totals.total ?? 0),
+    currency: String(data["currency_code"] ?? "USD"),
+    providerRef: String(data["id"]),
+    environment: env,
+  });
+}
+
+/** A bought add-on pack tops up this month's allowance for the buying creator. */
+async function handleAddonPack(data: Record<string, any>, priceId: string, env: PaddleEnv) {
+  const { packByPriceId } = await import("@/lib/plans");
+  const pack = packByPriceId(priceId);
+  if (!pack) return;
+  const custom = (data["custom_data"] ?? {}) as Record<string, string>;
+  const userId = custom["userId"];
+  if (!userId) {
+    console.error("Add-on pack purchase missing userId", data["id"]);
+    return;
+  }
+  const items: { quantity?: number }[] = data["items"] ?? [];
+  const quantity = Math.max(1, Number(items[0]?.quantity ?? 1));
+  const { addUsageGrant } = await import("@/lib/usage.server");
+  await addUsageGrant({
+    creatorId: userId,
+    metric: pack.metric,
+    amount: pack.amount * quantity,
+    source: "purchase",
+    note: `${pack.name}${quantity > 1 ? ` x${quantity}` : ""}`,
+    providerRef: String(data["id"]),
+    environment: env,
+  });
+}
+
+/** Refunds and chargebacks reverse the creator's earning so it is never paid out. */
+async function handleAdjustment(data: Record<string, any>) {
+  const action = String(data["action"] ?? "");
+  if (action !== "refund" && action !== "chargeback") return;
+  const transactionId = data["transaction_id"];
+  if (!transactionId) return;
+  const { reverseListingSale } = await import("@/lib/earnings.server");
+  await reverseListingSale(String(transactionId));
+}
+
+/** One-time purchases: report unlocks, add-on packs and marketplace listing sales. */
 async function handleTransactionCompleted(data: Record<string, any>, env: PaddleEnv) {
+  const custom = (data["custom_data"] ?? {}) as Record<string, string>;
+  if (custom["kind"] === "listing") {
+    await handleListingSale(data, env);
+    return;
+  }
+
   const priceId = externalPriceId(data);
+  if (!priceId) return;
+  if (priceId.startsWith("addon_")) {
+    await handleAddonPack(data, priceId, env);
+    return;
+  }
   if (priceId !== "premium_report_once") return;
 
-  const custom = (data["custom_data"] ?? {}) as Record<string, string>;
+
   const participantId = custom["participantId"];
   const attemptId = custom["attemptId"];
   if (!participantId || !attemptId) {
@@ -143,6 +212,11 @@ async function handleWebhook(request: Request, env: PaddleEnv) {
       // past_due, which still grants access during the grace period.
       console.log("Payment failed for transaction", event.data["id"]);
       break;
+    case "adjustment.created":
+    case "adjustment.updated":
+      await handleAdjustment(event.data);
+      break;
+
     default:
       console.log("Unhandled Paddle event:", event.event_type);
   }

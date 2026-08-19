@@ -21,6 +21,8 @@ export type MarketplaceListing = {
   creatorOrg: string | null;
   attempts: number;
   visuals: TestVisuals;
+  priceCents: number;
+  saleMode: "free" | "take" | "results";
 };
 
 async function adminDb() {
@@ -45,7 +47,9 @@ export const browseMarketplace = createServerFn({ method: "POST" })
     const { visualsOf } = await import("./visuals");
     const { data: rows } = await db
       .from("tests")
-      .select("id, title, tagline, listing_description, access_code, spec, featured, verified, listed_at, creator_id")
+      .select(
+        "id, title, tagline, listing_description, access_code, spec, featured, verified, listed_at, creator_id, price_cents, sale_mode",
+      )
       .eq("published", true)
       .eq("listed", true)
       .is("deleted_at", null)
@@ -88,6 +92,8 @@ export const browseMarketplace = createServerFn({ method: "POST" })
         creatorOrg: profile?.plan === "business" ? null : (profile?.org ?? null),
         attempts: attemptCounts.get(row.id) ?? 0,
         visuals: visualsOf(spec),
+        priceCents: row.price_cents ?? 0,
+        saleMode: (row.sale_mode ?? "free") as "free" | "take" | "results",
       });
     }
 
