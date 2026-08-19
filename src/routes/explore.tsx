@@ -99,11 +99,13 @@ function ExplorePage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-5 py-10">
-        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Explore public tests</h1>
+        <h1 className="font-display text-3xl font-semibold sm:text-4xl">Explore public questionnaires</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Theory-grounded self-report instruments published by Psych Lab creators. Each one is scored instantly with
-          subscale bands and a written interpretation.
+          Self-report questionnaires published by Psych Lab creators. Your answers are added up arithmetically and the
+          score range text the creator wrote in advance is shown back to you — for curiosity and self-reflection, not
+          diagnosis, screening or advice.
         </p>
+
 
         <div className="mt-8 flex flex-wrap items-end gap-3">
           <div className="relative min-w-[240px] flex-1">
