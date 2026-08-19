@@ -200,6 +200,8 @@ function TestDetail() {
               verified: test.data.verified,
               tagline: test.data.tagline,
               listing_description: test.data.listing_description,
+              price_cents: test.data.price_cents,
+              sale_mode: test.data.sale_mode,
             }}
           />
         </TabsContent>

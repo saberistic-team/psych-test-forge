@@ -55,7 +55,7 @@ export const getMyTest = createServerFn({ method: "POST" })
     const { data: test, error } = await context.supabase
       .from("tests")
       .select(
-        "id, title, spec, access_code, published, listed, featured, verified, tagline, listing_description, created_at, updated_at",
+        "id, title, spec, access_code, published, listed, featured, verified, tagline, listing_description, price_cents, sale_mode, created_at, updated_at",
       )
       .eq("id", data.id)
       .maybeSingle();

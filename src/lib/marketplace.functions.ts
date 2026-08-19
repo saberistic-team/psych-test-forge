@@ -158,6 +158,7 @@ export const getListingSlots = createServerFn({ method: "GET" })
       limit: usage.limit,
       remaining: usage.remaining,
       canRequestFeatured: usage.canRequestFeatured,
+      canPriceListings: usage.canPriceListings,
     };
   });
 
