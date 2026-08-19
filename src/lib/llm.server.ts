@@ -330,14 +330,14 @@ export async function generateVisualsBlock(opts: {
       messages.push({ role: "user", content: `That could not be parsed: ${lastError}. Return ONLY the JSON object.` });
       continue;
     }
-    const parsed = visualsSchema.safeParse(candidate);
+    const { coerceSpec } = await import("./spec-coerce");
+    const coerced = coerceSpec({ visuals: candidate }) as { visuals?: unknown };
+    const parsed = visualsSchema.safeParse(coerced.visuals ?? candidate);
     if (parsed.success) return parsed.data;
-    lastError = parsed.error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`).join("; ");
+    const issues = parsed.error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`);
+    lastError = issues.join("; ");
     messages.push({ role: "assistant", content: JSON.stringify(candidate).slice(0, 2000) });
-    messages.push({
-      role: "user",
-      content: `Your JSON failed validation: ${lastError}. Fix it and return ONLY the corrected JSON object.`,
-    });
+    messages.push({ role: "user", content: buildRepairMessage(issues, attempt >= 2) });
   }
   throw new Error(`The model could not produce a valid visuals block: ${lastError}`);
 }
