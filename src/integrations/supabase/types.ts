@@ -547,6 +547,7 @@ export type Database = {
           creator_id: string
           deleted_at: string | null
           featured: boolean
+          hide_attribution: boolean
           id: string
           listed: boolean
           listed_at: string | null
@@ -567,6 +568,7 @@ export type Database = {
           creator_id: string
           deleted_at?: string | null
           featured?: boolean
+          hide_attribution?: boolean
           id?: string
           listed?: boolean
           listed_at?: string | null
@@ -587,6 +589,7 @@ export type Database = {
           creator_id?: string
           deleted_at?: string | null
           featured?: boolean
+          hide_attribution?: boolean
           id?: string
           listed?: boolean
           listed_at?: string | null
