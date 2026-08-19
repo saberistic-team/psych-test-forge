@@ -9,6 +9,7 @@ import {
   Shield,
   LogOut,
   Globe,
+  Banknote,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ const NAV = [
   { to: "/tests", label: "Test library", icon: Library },
   { to: "/analytics", label: "Results", icon: BarChart3 },
   { to: "/explore", label: "Explore", icon: Globe },
+  { to: "/earnings", label: "Earnings", icon: Banknote },
   { to: "/billing", label: "Billing", icon: CreditCard },
 ] as const;
 
