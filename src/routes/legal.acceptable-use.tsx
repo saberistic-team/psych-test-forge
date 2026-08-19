@@ -35,7 +35,22 @@ function AcceptableUsePage() {
         content-creation and self-reflection tool for research, education and entertainment.
       </p>
 
-      <h2>2. Psych Lab does not make or influence decisions about people</h2>
+      <h2>2. Where AI runs, and where it does not</h2>
+      <p>
+        AI is used at one point only: while a creator is drafting a questionnaire, before any respondent exists. It
+        writes candidate question wording, response-scale labels, section names and the descriptive text attached to
+        each score range, plus decorative icon and banner artwork. The creator then edits and approves that draft.
+      </p>
+      <p>
+        After publishing, no AI is involved at any stage. Respondents' answers are never sent to a model. A score is the
+        sum or mean of the answers a person gave about themselves, with reverse-scored items flipped, and the text shown
+        for a score range is the creator's pre-written text — identical for every person whose score falls in that
+        range. The platform produces no AI-written commentary, rating, ranking, risk score, prediction or profile about
+        any individual.
+      </p>
+
+      <h2>3. Psych Lab does not make or influence decisions about people</h2>
+
       <p>
         Psych Lab produces no recommendations, ratings, eligibility outcomes, risk scores or profiles that are intended
         to be acted upon by a third party about an individual. Specifically:
