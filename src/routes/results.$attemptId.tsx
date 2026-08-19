@@ -229,7 +229,7 @@ function ResultsPage() {
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Button onClick={() => void buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
                     {checkoutLoading ? <Loader2 className="size-4 animate-spin" /> : null}
-                    Unlock full reports — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
+                    Unlock write-ups — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
                   </Button>
                   <Button
                     variant="outline"
@@ -244,8 +244,8 @@ function ResultsPage() {
                   <a href="/legal/refunds" className="underline">
                     Refund Policy
                   </a>
-                  . A one-time unlock covers the full report and PDF for every result you have taken on this device.
-                  Your report unlocks as soon as the payment is confirmed.
+                  . A one-time unlock covers the extended write-up and PDF for every result on this device, and unlocks
+                  as soon as the payment is confirmed.
                 </p>
               </div>
             ) : null}
@@ -253,14 +253,16 @@ function ResultsPage() {
             <div className="mt-10 rounded-xl bg-secondary/60 p-5 text-xs leading-relaxed text-muted-foreground">
               <p>{result.spec.interpretation.disclaimer}</p>
               <p className="mt-3">
-                These scores are arithmetic summaries of the answers you gave about yourself. They are for
-                self-reflection only: they are not a diagnosis, not professional advice, and no decision about you is
-                made or influenced by them. Read our{" "}
+                These scores are fixed arithmetic summaries of the answers you gave about yourself, and the wording you
+                see was written by the creator before you started. No AI read or analysed your answers, nothing here is
+                a diagnosis, screening result or professional advice, and no decision about you is made or influenced by
+                any of it. Read our{" "}
                 <a href="/legal/acceptable-use" className="underline">
                   AI Use &amp; No Automated Decisions Policy
                 </a>
                 .{result.watermark ? " · Created with Psych Lab (free plan)" : ""}
               </p>
+
             </div>
           </>
         )}
