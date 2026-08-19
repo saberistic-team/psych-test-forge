@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
@@ -60,6 +61,11 @@ const HistoryRoute = HistoryRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/history': typeof HistoryRoute
   '/legal': typeof LegalRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/admin'
     | '/analytics'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/admin'
     | '/analytics'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/history'
     | '/legal'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/analytics'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   HistoryRoute: typeof HistoryRoute
   LegalRoute: typeof LegalRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   GuidesWhatIsTheBigFivePersonalityTestRoute: typeof GuidesWhatIsTheBigFivePersonalityTestRoute
   ResultsAttemptIdRoute: typeof ResultsAttemptIdRoute
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -527,6 +547,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   HistoryRoute: HistoryRoute,
   LegalRoute: LegalRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   GuidesWhatIsTheBigFivePersonalityTestRoute:
     GuidesWhatIsTheBigFivePersonalityTestRoute,
