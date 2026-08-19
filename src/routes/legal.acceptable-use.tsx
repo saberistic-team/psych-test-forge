@@ -72,7 +72,7 @@ function AcceptableUsePage() {
         </li>
       </ul>
 
-      <h2>3. Prohibited uses</h2>
+      <h2>4. Prohibited uses</h2>
       <p>
         You must not use Psych Lab, or any test or output produced with it, for any of the following. Accounts doing so
         are suspended.
@@ -102,7 +102,7 @@ function AcceptableUsePage() {
         </li>
       </ul>
 
-      <h2>4. Human review is required</h2>
+      <h2>5. Human review is required</h2>
       <p>
         Every AI-generated instrument is a draft. The creator is the author and publisher of the test: they must read,
         edit and approve the items, scoring and interpretation text before publishing, and they remain responsible for
@@ -110,14 +110,14 @@ function AcceptableUsePage() {
         creator's explicit action.
       </p>
 
-      <h2>5. No advice, no guarantee of accuracy</h2>
+      <h2>6. No advice, no guarantee of accuracy</h2>
       <p>
         AI-generated items, bands and narrative text may be inaccurate, incomplete or psychometrically unvalidated.
         Nothing on Psych Lab is medical, psychological, legal, financial or other professional advice, and nothing should
         be relied upon as such. If you have a health concern, speak to a qualified professional.
       </p>
 
-      <h2>6. Enforcement</h2>
+      <h2>7. Enforcement</h2>
       <p>
         We may filter or refuse AI outputs, remove or unlist tests, and suspend or terminate accounts that breach this
         policy or our <a href="/legal/terms">Terms &amp; Conditions</a>. Report misuse or an allegedly infringing test
