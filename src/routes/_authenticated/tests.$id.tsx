@@ -176,6 +176,37 @@ function TestDetail() {
         </div>
       )}
 
+      <div className="surface mt-5 flex flex-wrap items-center justify-between gap-4 p-5">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-display text-lg font-semibold">Marketplace listing</h2>
+            <Badge variant={test.data.listed ? "default" : "secondary"}>
+              {test.data.listed ? "Listed on Explore" : "Not listed"}
+            </Badge>
+            {test.data.listed && test.data.sale_mode !== "free" && test.data.price_cents ? (
+              <Badge variant="outline">${(test.data.price_cents / 100).toFixed(2)}</Badge>
+            ) : null}
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {test.data.listed
+              ? "Anyone can find this questionnaire on the public Explore page."
+              : test.data.published
+                ? "List it on Explore to make it public, and set a price if you sell access."
+                : "Publish the test first, then list it on the public Explore page."}
+          </p>
+        </div>
+        <Button
+          variant={test.data.listed ? "outline" : "default"}
+          size="sm"
+          onClick={() => {
+            setTab("marketplace");
+            document.getElementById("test-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        >
+          {test.data.listed ? "Manage listing & price" : "List on marketplace"}
+        </Button>
+      </div>
+
       <div className="mt-5">
         <EmbedPanel
           testId={id}
@@ -187,16 +218,17 @@ function TestDetail() {
         />
       </div>
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-8">
-        <TabsList>
+      <Tabs value={tab} onValueChange={setTab} className="mt-8" id="test-tabs">
+        <TabsList className="h-auto w-full flex-wrap justify-start">
           <TabsTrigger value="visuals">Visuals</TabsTrigger>
-          <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
+          <TabsTrigger value="marketplace">Marketplace &amp; pricing</TabsTrigger>
           <TabsTrigger value="items">Items ({spec.items.length})</TabsTrigger>
           <TabsTrigger value="scoring">Scoring</TabsTrigger>
           <TabsTrigger value="interpretation">Interpretation</TabsTrigger>
           <TabsTrigger value="responses">Responses ({attempts.data?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="json">Spec JSON</TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="visuals" className="mt-6">
           <VisualsPanel testId={id} spec={spec} />
