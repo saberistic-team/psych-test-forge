@@ -281,6 +281,7 @@ function ResultsPage() {
           </>
         )}
       </main>
+      {checkoutElement}
     </div>
   );
 }
