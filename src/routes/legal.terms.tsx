@@ -132,19 +132,16 @@ function TermsPage() {
 
       <h2>9. Payments, subscriptions and refunds</h2>
       <p>
-        Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all
-        our orders. Paddle provides all customer service inquiries and handles returns.
+        Psych Lab sells its plans and unlocks directly. Card details are collected and processed on our behalf by
+        Stripe; we never see or store your full card number. Prices are shown in the currency displayed at checkout,
+        and any applicable sales tax or VAT is calculated and added at checkout.
       </p>
       <p>
-        Payment, billing frequency, applicable taxes, currency, renewals, cancellations and refund mechanics are
-        governed by{" "}
-        <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noreferrer noopener">
-          Paddle's Checkout Buyer Terms
-        </a>
-        . Subscriptions renew automatically for the interval you selected until cancelled. You can cancel at any time
-        from your billing page or the Paddle customer portal; paid features remain available until the end of the
-        period you have already paid for, after which the account returns to the Free plan. See our{" "}
-        <a href="/legal/refunds">Refund Policy</a> for our money-back guarantee.
+        Subscriptions renew automatically for the interval you selected until cancelled. You can cancel at any time
+        from your billing page, which opens a secure Stripe portal where you can also update your payment method and
+        download receipts; paid features remain available until the end of the period you have already paid for, after
+        which the account returns to the Free plan. See our <a href="/legal/refunds">Refund Policy</a> for our
+        money-back guarantee.
       </p>
 
       <h2>10. Suspension and termination</h2>
