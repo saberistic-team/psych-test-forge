@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { FlaskConical, Loader2 } from "lucide-react";
 import { getMyHistory } from "@/lib/participant.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { getParticipantId } from "@/lib/participant-id";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/history")({
 
 function HistoryPage() {
   const fetchHistory = useServerFn(getMyHistory);
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
   const [participantId, setParticipantId] = useState("");
   useEffect(() => setParticipantId(getParticipantId()), []);
 

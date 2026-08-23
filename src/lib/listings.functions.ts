@@ -2,11 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  LISTING_ACCESS_PRODUCT,
-  LISTING_PRICE_MAX_CENTS,
-  LISTING_PRICE_MIN_CENTS,
-} from "./plans";
+import { LISTING_ACCESS_PRICE } from "./payments-catalog";
+import { LISTING_PRICE_MAX_CENTS, LISTING_PRICE_MIN_CENTS } from "./plans";
 
 const envSchema = z.enum(["sandbox", "live"]);
 
@@ -68,6 +65,7 @@ export const createListingCheckout = createServerFn({ method: "POST" })
       .object({
         testId: z.string().uuid(),
         participantId: z.string().min(6).max(64),
+        returnUrl: z.string().url(),
         environment: envSchema.default("live"),
       })
       .parse(input),
@@ -84,22 +82,42 @@ export const createListingCheckout = createServerFn({ method: "POST" })
     const saleMode = (test.sale_mode ?? "free") as "free" | "take" | "results";
     if (saleMode === "free" || test.price_cents <= 0) throw new Error("This questionnaire is free.");
     if (await hasPaid(data.testId, data.participantId, data.environment)) {
-      return { transactionId: null, alreadyPaid: true as const };
+      return { clientSecret: null, alreadyPaid: true as const };
     }
 
-    const { createAdHocTransaction } = await import("./paddle.server");
-    const transactionId = await createAdHocTransaction(data.environment, {
-      productExternalId: LISTING_ACCESS_PRODUCT,
-      amountCents: test.price_cents,
-      description: test.title,
-      customData: {
-        kind: "listing",
-        testId: test.id,
-        participantId: data.participantId,
-        mode: saleMode === "take" ? "take" : "results",
-      },
-    });
-    return { transactionId, alreadyPaid: false as const };
+    const { createStripeClient, createManagedSession, resolveProductId, getStripeErrorMessage } = await import(
+      "./stripe.server"
+    );
+
+    try {
+      const stripe = createStripeClient(data.environment);
+      const productId = await resolveProductId(stripe, LISTING_ACCESS_PRICE);
+      const session = await createManagedSession(stripe, {
+        mode: "payment",
+        ui_mode: "embedded_page",
+        return_url: data.returnUrl,
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: "usd",
+              product: productId,
+              unit_amount: test.price_cents,
+            },
+          },
+        ],
+        payment_intent_data: { description: `${test.title} — questionnaire access` },
+        metadata: {
+          kind: "listing",
+          testId: test.id,
+          participantId: data.participantId,
+          mode: saleMode === "take" ? "take" : "results",
+        },
+      });
+      return { clientSecret: session.client_secret ?? "", alreadyPaid: false as const };
+    } catch (error) {
+      throw new Error(getStripeErrorMessage(error));
+    }
   });
 
 /** Business creators set the price and what the payment buys. */

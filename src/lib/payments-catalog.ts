@@ -1,4 +1,4 @@
-/** Human-readable Paddle price IDs used by checkout code (client-safe). */
+/** Human-readable price IDs used by checkout code (client-safe). */
 export const PRICE_IDS = {
   proMonthly: "pro_monthly",
   proYearly: "pro_yearly",
@@ -8,9 +8,12 @@ export const PRICE_IDS = {
   resultsPlusMonthly: "results_plus_monthly",
 } as const;
 
+/** Price used to resolve the marketplace access product for creator-set prices. */
+export const LISTING_ACCESS_PRICE = "listing_access_default";
+
 export type BillingInterval = "month" | "year";
 
-/** Maps a Paddle price ID to the internal plan it grants. */
+/** Maps a price ID to the internal plan it grants. */
 export const PRICE_TO_PLAN: Record<string, string> = {
   pro_monthly: "pro",
   pro_yearly: "pro",

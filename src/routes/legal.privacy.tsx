@@ -89,7 +89,7 @@ function PrivacyPage() {
           error monitoring and support tooling, acting under contract on our instructions.
         </li>
         <li>
-          <strong>Paddle</strong>, our Merchant of Record, for the sale of our products, subscription management,
+          <strong>Stripe</strong>, our payment processor, for the sale of our products, subscription management,
           payment processing, tax compliance and invoicing.
         </li>
         <li>

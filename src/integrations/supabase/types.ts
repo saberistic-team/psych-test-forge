@@ -494,12 +494,12 @@ export type Database = {
           current_period_start: string | null
           environment: string
           id: string
-          paddle_customer_id: string | null
-          paddle_subscription_id: string | null
           participant_id: string | null
           plan: string
           price_id: string | null
+          provider_customer_id: string | null
           provider_ref: string | null
+          provider_subscription_id: string | null
           status: string
           updated_at: string
           user_id: string | null
@@ -511,12 +511,12 @@ export type Database = {
           current_period_start?: string | null
           environment?: string
           id?: string
-          paddle_customer_id?: string | null
-          paddle_subscription_id?: string | null
           participant_id?: string | null
           plan: string
           price_id?: string | null
+          provider_customer_id?: string | null
           provider_ref?: string | null
+          provider_subscription_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -528,12 +528,12 @@ export type Database = {
           current_period_start?: string | null
           environment?: string
           id?: string
-          paddle_customer_id?: string | null
-          paddle_subscription_id?: string | null
           participant_id?: string | null
           plan?: string
           price_id?: string | null
+          provider_customer_id?: string | null
           provider_ref?: string | null
+          provider_subscription_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null

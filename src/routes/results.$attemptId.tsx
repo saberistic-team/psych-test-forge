@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, FlaskConical, Loader2, Lock, ShieldCheck, Sparkles, History } from "lucide-react";
 import { toast } from "sonner";
 import { getAttemptResult } from "@/lib/participant.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
-import { PRICE_IDS } from "@/lib/paddle-catalog";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { PRICE_IDS } from "@/lib/payments-catalog";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getParticipantId } from "@/lib/participant-id";
 import { PARTICIPANT_PRICING } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,8 @@ export const Route = createFileRoute("/results/$attemptId")({
 function ResultsPage() {
   const { attemptId } = Route.useParams();
   const fetchResult = useServerFn(getAttemptResult);
-  const environment = getPaddleEnvironment();
-  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const environment = getStripeEnvironment();
+  const { openCheckout, loading: checkoutLoading, checkoutElement } = useStripeCheckout();
   const [participantId, setParticipantId] = useState("");
 
   useEffect(() => setParticipantId(getParticipantId()), []);
@@ -59,8 +59,9 @@ function ResultsPage() {
   const buy = (priceId: string) =>
     openCheckout({
       priceId,
-      customData: { participantId, attemptId },
-      successUrl: `${window.location.origin}/results/${attemptId}?checkout=success`,
+      title: priceId === PRICE_IDS.premiumReport ? "Unlock write-ups" : "Results Plus",
+      metadata: { participantId, attemptId },
+      returnUrl: `${window.location.origin}/results/${attemptId}?checkout=success`,
     });
 
   const result = query.data?.found ? query.data.result : null;
@@ -240,20 +241,20 @@ function ResultsPage() {
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <Button onClick={() => void buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
+                  <Button onClick={() => buy(PRICE_IDS.premiumReport)} disabled={checkoutLoading}>
                     {checkoutLoading ? <Loader2 className="size-4 animate-spin" /> : null}
                     Unlock write-ups — ${(PARTICIPANT_PRICING.premiumReportCents / 100).toFixed(2)} once
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => void buy(PRICE_IDS.resultsPlusMonthly)}
+                    onClick={() => buy(PRICE_IDS.resultsPlusMonthly)}
                     disabled={checkoutLoading}
                   >
                     Results+ — ${(PARTICIPANT_PRICING.resultsPlusCents / 100).toFixed(2)}/month
                   </Button>
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Payments are handled by Paddle.com as Merchant of Record. 30-day money-back guarantee — see our{" "}
+                  Payments and receipts are handled by Stripe. 30-day money-back guarantee — see our{" "}
                   <a href="/legal/refunds" className="underline">
                     Refund Policy
                   </a>
@@ -280,6 +281,7 @@ function ResultsPage() {
           </>
         )}
       </main>
+      {checkoutElement}
     </div>
   );
 }

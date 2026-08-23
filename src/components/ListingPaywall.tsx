@@ -1,11 +1,11 @@
+import { useCallback, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
 import { Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { createListingCheckout } from "@/lib/listings.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { StripeCheckoutDialog } from "@/components/StripeCheckoutDialog";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -19,24 +19,38 @@ type Props = {
 /** Payment gate for questionnaires a creator sells on the marketplace. */
 export function ListingPaywall({ testId, participantId, priceCents, mode, onAlreadyPaid }: Props) {
   const start = useServerFn(createListingCheckout);
-  const { openTransaction, loading } = usePaddleCheckout();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      start({ data: { testId, participantId, environment: getPaddleEnvironment() } }),
-    onSuccess: async (res) => {
-      if (res.alreadyPaid || !res.transactionId) {
+  const fetchClientSecret = useCallback(async () => {
+    setBusy(true);
+    try {
+      const res = await start({
+        data: {
+          testId,
+          participantId,
+          returnUrl: window.location.href,
+          environment: getStripeEnvironment(),
+        },
+      });
+      if (res.alreadyPaid || !res.clientSecret) {
+        setOpen(false);
         toast.success("You already have access.");
         onAlreadyPaid?.();
-        return;
+        throw new Error("Access already granted.");
       }
-      await openTransaction(res.transactionId);
-    },
-    onError: () => toast.error("Could not start the payment. Please try again."),
-  });
+      return res.clientSecret;
+    } catch (error) {
+      setOpen(false);
+      const message = error instanceof Error ? error.message : "Could not start the payment.";
+      if (message !== "Access already granted.") toast.error(message);
+      throw error;
+    } finally {
+      setBusy(false);
+    }
+  }, [start, testId, participantId, onAlreadyPaid]);
 
   const price = `$${(priceCents / 100).toFixed(2)}`;
-  const busy = mutation.isPending || loading;
 
   return (
     <div className="surface p-6 sm:p-8">
@@ -53,16 +67,22 @@ export function ListingPaywall({ testId, participantId, priceCents, mode, onAlre
           </p>
         </div>
       </div>
-      <Button size="lg" className="mt-6" onClick={() => mutation.mutate()} disabled={busy || !participantId}>
+      <Button size="lg" className="mt-6" onClick={() => setOpen(true)} disabled={busy || !participantId}>
         {busy ? <Loader2 className="size-4 animate-spin" /> : null} Pay {price}
       </Button>
       <p className="mt-3 text-xs text-muted-foreground">
-        Payments are handled by Paddle.com as Merchant of Record. 30-day money-back guarantee — see our{" "}
+        Payments and receipts are handled by Stripe. 30-day money-back guarantee — see our{" "}
         <a href="/legal/refunds" className="underline">
           Refund Policy
         </a>
         .
       </p>
+      <StripeCheckoutDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Unlock this questionnaire"
+        fetchClientSecret={fetchClientSecret}
+      />
     </div>
   );
 }
