@@ -96,6 +96,57 @@ export class GatewayError extends Error {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Models the generator is allowed to call — anything else is a config bug, not a model failure. */
+export const ALLOWED_MODELS = [
+  "google/gemini-3.5-flash",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-pro",
+  "openai/gpt-5.4",
+  "openai/gpt-5.4-mini",
+] as const;
+
+export function resolveModel(model: string): string {
+  return (ALLOWED_MODELS as readonly string[]).includes(model) ? model : "google/gemini-3.5-flash";
+}
+
+/**
+ * Reads a chat-completions SSE stream and returns the joined assistant text.
+ * Streaming is mandatory here: a full spec is 8-12k output tokens and a buffered
+ * request routinely gets cancelled (HTTP 499) before the JSON arrives.
+ */
+async function readStream(res: Response): Promise<string> {
+  const body = res.body;
+  if (!body) throw new GatewayError("The AI service returned an empty stream.", 502, true);
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let out = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const data = trimmed.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      try {
+        const chunk = JSON.parse(data) as {
+          choices?: { delta?: { content?: string }; message?: { content?: string } }[];
+        };
+        const piece = chunk.choices?.[0]?.delta?.content ?? chunk.choices?.[0]?.message?.content;
+        if (piece) out += piece;
+      } catch {
+        // partial or keep-alive frame — ignore
+      }
+    }
+  }
+  if (!out.trim()) throw new GatewayError("The AI service returned an empty response.", 502, true);
+  return out;
+}
+
 async function callModelOnce(
   messages: { role: string; content: string }[],
   model: string,
@@ -103,7 +154,7 @@ async function callModelOnce(
 ): Promise<string> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new GatewayError("The AI gateway is not configured for this project.", 401, false);
-  const body: Record<string, unknown> = { model, messages, stream: false };
+  const body: Record<string, unknown> = { model: resolveModel(model), messages, stream: true };
   if (!model.startsWith("openai/gpt-5")) body["temperature"] = temperature;
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -135,11 +186,9 @@ async function callModelOnce(
       res.status,
       res.status >= 500,
     );
-  const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  const content = json.choices?.[0]?.message?.content;
-  if (!content) throw new GatewayError("The AI service returned an empty response.", 502, true);
-  return content;
+  return await readStream(res);
 }
+
 
 /**
  * Calls the model, transparently retrying transport failures (429 / 5xx) with backoff.
