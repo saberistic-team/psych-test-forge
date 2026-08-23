@@ -4,7 +4,7 @@ import { Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 import { createListingCheckout } from "@/lib/listings.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { Button } from "@/components/ui/button";
 
@@ -23,7 +23,7 @@ export function ListingPaywall({ testId, participantId, priceCents, mode, onAlre
 
   const mutation = useMutation({
     mutationFn: () =>
-      start({ data: { testId, participantId, environment: getPaddleEnvironment() } }),
+      start({ data: { testId, participantId, environment: getStripeEnvironment() } }),
     onSuccess: async (res) => {
       if (res.alreadyPaid || !res.transactionId) {
         toast.success("You already have access.");

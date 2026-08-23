@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { getAdminPayouts, markPayoutPaid } from "@/lib/earnings.functions";
 import { setPlatformRevenueShare } from "@/lib/admin.functions";
 import { centsToUsd } from "@/lib/plans";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 export function PayoutsPanel() {
   const qc = useQueryClient();
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
   const fetchPayouts = useServerFn(getAdminPayouts);
   const payouts = useQuery({
     queryKey: ["admin-payouts", environment],

@@ -6,7 +6,7 @@ import { AlertCircle, ArrowLeft, ArrowRight, FlaskConical, Loader2 } from "lucid
 import { toast } from "sonner";
 import { getTestByCode, submitAttempt } from "@/lib/participant.functions";
 import { getListingAccess } from "@/lib/listings.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { ListingPaywall } from "@/components/ListingPaywall";
 import { getParticipantId, getParticipantName, setParticipantName } from "@/lib/participant-id";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,7 @@ function TakePage() {
     refetchInterval: (q) => (q.state.data?.paid ? false : 5000),
     queryFn: () =>
       fetchAccess({
-        data: { testId: test0!.id, participantId, environment: getPaddleEnvironment() },
+        data: { testId: test0!.id, participantId, environment: getStripeEnvironment() },
       }),
   });
 

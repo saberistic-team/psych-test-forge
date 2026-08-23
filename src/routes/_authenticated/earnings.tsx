@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { getMyEarnings, saveMyPayoutAccount } from "@/lib/earnings.functions";
 import { getMyAccount } from "@/lib/tests.functions";
 import { centsToUsd } from "@/lib/plans";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ function monthLabel(month: string) {
 
 function Earnings() {
   const qc = useQueryClient();
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
   const account = useQuery({ queryKey: ["account"], queryFn: useServerFn(getMyAccount) });
 
   const fetchEarnings = useServerFn(getMyEarnings);

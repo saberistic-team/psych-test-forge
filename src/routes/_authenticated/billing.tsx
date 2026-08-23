@@ -17,8 +17,8 @@ import {
   packsForPlan,
   type AddonPack,
 } from "@/lib/plans";
-import { CREATOR_PLAN_PRICES, YEARLY_PRICES, type BillingInterval } from "@/lib/paddle-catalog";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { CREATOR_PLAN_PRICES, YEARLY_PRICES, type BillingInterval } from "@/lib/payments-catalog";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { AppShell } from "@/components/AppShell";
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/billing")({
 function Billing() {
   const qc = useQueryClient();
   const { user } = useAuth();
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
   const [interval, setInterval] = useState<BillingInterval>("month");
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
 

@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, FlaskConical, Loader2, Lock, ShieldCheck, Sparkles, History } from "lucide-react";
 import { toast } from "sonner";
 import { getAttemptResult } from "@/lib/participant.functions";
-import { getPaddleEnvironment } from "@/lib/paddle";
-import { PRICE_IDS } from "@/lib/paddle-catalog";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { PRICE_IDS } from "@/lib/payments-catalog";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { getParticipantId } from "@/lib/participant-id";
 import { PARTICIPANT_PRICING } from "@/lib/plans";
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/results/$attemptId")({
 function ResultsPage() {
   const { attemptId } = Route.useParams();
   const fetchResult = useServerFn(getAttemptResult);
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const [participantId, setParticipantId] = useState("");
 
