@@ -88,8 +88,9 @@ export function MarketplacePanel({ test }: { test: TestRow }) {
     onError: () => toast.error("Could not unlist the test."),
   });
 
-  const limit = slots.data?.limit ?? 0;
-  const locked = slots.data ? limit !== null && limit === 0 : false;
+  // `limit === null` means unlimited (Business) — never treat it as zero.
+  const limit = slots.data ? slots.data.limit : undefined;
+  const locked = limit === 0;
   const outOfSlots = Boolean(
     slots.data && !test.listed && slots.data.remaining !== null && slots.data.remaining <= 0,
   );
