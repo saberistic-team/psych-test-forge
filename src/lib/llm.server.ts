@@ -313,11 +313,19 @@ export async function generateSpec(opts: {
       const parseError = (err as Error).message;
       history.push([parseError]);
       if (attempt === MAX_ATTEMPTS) break;
+      // A truncated answer (unbalanced JSON) means the draft was cut short, not that the
+      // model misunderstood — ask again from the clean prompt instead of piling a repair
+      // round on top of half a spec, and don't spend the repair budget on it.
+      if (parseError.includes("unbalanced")) {
+        messages.length = 1;
+        continue;
+      }
       messages.push({ role: "assistant", content: text.slice(0, 4000) });
       messages.push({
         role: "user",
         content: `Your output could not be parsed as JSON: ${parseError}. Return ONLY one complete JSON object — no prose, no fences, no trailing commas.`,
       });
+
       continue;
     }
 
