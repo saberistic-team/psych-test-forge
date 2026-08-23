@@ -62,7 +62,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
         ...(customerId ? { customer: customerId } : {}),
-        ...(isRecurring ? { subscription_data: { metadata } } : { payment_intent_data: { description } }),
+        ...(isRecurring
+          ? { subscription_data: { metadata } }
+          : description
+            ? { payment_intent_data: { description } }
+            : {}),
         metadata,
       });
 
