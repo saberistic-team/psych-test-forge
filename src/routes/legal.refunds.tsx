@@ -7,12 +7,12 @@ export const Route = createFileRoute("/legal/refunds")({
       {
         name: "description",
         content:
-          "Psych Lab offers a 30-day money-back guarantee on subscriptions and report unlocks. Here is how to request a refund through Paddle.",
+          "Psych Lab offers a 30-day money-back guarantee on subscriptions and report unlocks. Here is how to request a refund.",
       },
       { property: "og:title", content: "Refund Policy — Psych Lab" },
       {
         property: "og:description",
-        content: "30-day money-back guarantee on Psych Lab plans and report unlocks, handled by Paddle.",
+        content: "30-day money-back guarantee on Psych Lab plans and report unlocks.",
       },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
@@ -36,18 +36,15 @@ function RefundPage() {
 
       <h2>How to request a refund</h2>
       <p>
-        Payments and refunds are processed by our reseller and Merchant of Record, Paddle. To request a refund, visit{" "}
-        <a href="https://paddle.net" target="_blank" rel="noreferrer noopener">
-          paddle.net
-        </a>{" "}
-        with your order email or receipt, or contact us through the support route on this site and we will pass the
-        request on. Refunds are returned to the original payment method, usually within 5–10 business days once
-        approved.
+        Payments are processed for us by Stripe. To request a refund, contact us through the support route on this site
+        with your order email or receipt number, and we will process it. Refunds are returned to the original payment
+        method, usually within 5–10 business days once approved.
       </p>
 
       <h2>Cancelling a subscription</h2>
       <p>
-        You can cancel a subscription at any time from your billing page or the Paddle customer portal. Cancelling
+        You can cancel a subscription at any time from your billing page, which opens a secure Stripe portal where you
+        can also update your payment method and download receipts. Cancelling
         stops future renewals; paid features stay available until the end of the period you have already paid for, and
         the account then returns to the Free plan. Cancelling on its own is not a refund request — use the process
         above if you also want your most recent payment refunded.
@@ -56,15 +53,9 @@ function RefundPage() {
       <h2>Other cases</h2>
       <p>
         If you were charged in error, charged twice, or the service was unavailable in a way that prevented you from
-        using what you paid for, contact us and we will arrange a refund even outside the 30-day window. Paddle's own{" "}
-        <a href="https://www.paddle.com/legal/refund-policy" target="_blank" rel="noreferrer noopener">
-          refund policy
-        </a>{" "}
-        and{" "}
-        <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noreferrer noopener">
-          buyer terms
-        </a>{" "}
-        also apply to every order, including any statutory cancellation rights you have in your country.
+        using what you paid for, contact us and we will arrange a refund even outside the 30-day window. Any statutory
+        cancellation or refund rights you have in your own country apply on top of this policy and are not affected by
+        it.
       </p>
     </article>
   );
