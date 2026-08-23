@@ -19,7 +19,7 @@ import {
 } from "@/lib/plans";
 import { CREATOR_PLAN_PRICES, YEARLY_PRICES, type BillingInterval } from "@/lib/payments-catalog";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ function Billing() {
   const { user } = useAuth();
   const environment = getStripeEnvironment();
   const [interval, setInterval] = useState<BillingInterval>("month");
-  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const { openCheckout, loading: checkoutLoading, checkoutElement } = useStripeCheckout();
 
   const account = useQuery({ queryKey: ["account"], queryFn: useServerFn(getMyAccount) });
   const fetchSubscription = useServerFn(getMySubscription);
@@ -55,7 +55,13 @@ function Billing() {
   const openPortal = useServerFn(createPortalSession);
   const portal = useMutation({
     mutationFn: () => openPortal({ data: { environment } }),
-    onSuccess: (res) => window.open(res.url, "_blank", "noopener"),
+    onSuccess: (res) => {
+      if ("error" in res) {
+        toast.error(res.error);
+        return;
+      }
+      window.open(res.url, "_blank", "noopener");
+    },
     onError: () => toast.error("Could not open the billing portal."),
   });
 
@@ -94,21 +100,24 @@ function Billing() {
 
   const buyPack = (pack: AddonPack) => {
     if (!user) return;
-    void openCheckout({
+    openCheckout({
       priceId: pack.priceId,
-      customerEmail: user.email ?? undefined,
-      customData: { userId: user.id, packId: pack.id },
-      successUrl: `${window.location.origin}/billing?pack=success`,
+      title: pack.name,
+      ...(user.email ? { customerEmail: user.email } : {}),
+      userId: user.id,
+      metadata: { packId: pack.id },
+      returnUrl: `${window.location.origin}/billing?pack=success`,
     });
   };
 
   const startCheckout = (planId: "pro" | "business") => {
     if (!user) return;
-    void openCheckout({
+    openCheckout({
       priceId: CREATOR_PLAN_PRICES[planId][interval],
-      customerEmail: user.email ?? undefined,
-      customData: { userId: user.id },
-      successUrl: `${window.location.origin}/billing?checkout=success`,
+      title: `Subscribe to ${planId === "pro" ? "Pro" : "Business"}`,
+      ...(user.email ? { customerEmail: user.email } : {}),
+      userId: user.id,
+      returnUrl: `${window.location.origin}/billing?checkout=success`,
     });
   };
 
@@ -288,11 +297,11 @@ function Billing() {
         </>
       )}
       <p className="mt-8 text-xs text-muted-foreground">
-        Orders are handled by our reseller Paddle.com, the Merchant of Record for all Psych Lab purchases. By
-        subscribing you agree to our <Link to="/legal/terms" className="underline">Terms</Link>,{" "}
+        Payments, receipts and tax are handled securely by Stripe on our behalf. By subscribing you agree to our <Link to="/legal/terms" className="underline">Terms</Link>,{" "}
         <Link to="/legal/privacy" className="underline">Privacy Notice</Link> and{" "}
         <Link to="/legal/refunds" className="underline">Refund Policy</Link> (30-day money-back guarantee).
       </p>
+      {checkoutElement}
     </AppShell>
   );
 }
